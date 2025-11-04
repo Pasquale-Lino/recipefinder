@@ -41,13 +41,15 @@ export async function apiFetch(endpoint, options = {}) {
 
   // 🚨 Gestione errori HTTP (es. 400, 403, 500)
   if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Errore HTTP ${response.status}: ${text}`);
+    const errorText = await response.text();
+    throw new Error(`Errore HTTP ${response.status}: ${errorText}`);
   }
-  //🔄 Proviamo a restituire JSON, ma se non è JSON restituiamo testo
+  const text = await response.text();
+
+  //🔄 Proviamo a restituire ...
   try {
-    return await response.json();
+    return JSON.parse(text); // Se è JSON, lo restituiamo come oggetto
   } catch {
-    return await response.text();
+    return text; // Altrimenti restituiamo il testo puro
   }
 }
