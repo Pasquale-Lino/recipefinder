@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { apiFetch } from "../api/api";
+import { Link } from "react-router-dom";
+
 /**
  * Componente per cercare ricette in base agli ingredienti inseriti dall'utente.
  * - Usa useState per gestire ingredienti, ricette e stato di caricamento.
@@ -57,17 +59,19 @@ function SearchRecipes() {
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       <ul style={{ listStyle: "none", padding: 0 }}>
-        {recipes.map((r) => (
-          <li key={r.id} style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
-            <strong>{r.title}</strong><br />
-            <img src={r.image} alt={r.title} width="200" style={{ borderRadius: "10px" }} /><br />
-            <p>
-              🧂 Ingredienti usati: {r.usedIngredientCount} | ❌ Ingredienti mancanti: {r.missedIngredientCount}
-            </p>
-            <p>❤️ Likes: {r.likes}</p>
-          </li>
-        ))}
-      </ul>
+  {recipes.map((r) => (
+    <li key={r.id} style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
+      <Link to={`/recipe/${r.id}`} style={{ textDecoration: "none", color: "inherit" }}>
+        <strong>{r.title}</strong><br />
+        <img src={r.image} alt={r.title} width="200" style={{ borderRadius: "10px" }} /><br />
+        <p>
+          🧂 Ingredienti usati: {r.usedIngredientCount} | ❌ Ingredienti mancanti: {r.missedIngredientCount}
+        </p>
+        <p>❤️ Likes: {r.likes}</p>
+      </Link>
+    </li>
+  ))}
+</ul>
 
       {recipes.length === 0 && !loading && !error && <p>Nessuna ricetta trovata 😢</p>}
     </div>

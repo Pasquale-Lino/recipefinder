@@ -29,4 +29,15 @@ public class RecipeService {
         Object[] recipes = restTemplate.getForObject(url, Object[].class);
         return Map.of("results", recipes);
     }
+    public Map<String, Object> getRecipeDetails(long id) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        String url = String.format(
+                "https://api.spoonacular.com/recipes/%d/information?includeNutrition=true&apiKey=%s",
+                id, apiKey
+        );
+
+        return restTemplate.getForObject(url, Map.class);
+    }
+
 }

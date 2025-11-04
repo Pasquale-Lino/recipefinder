@@ -21,6 +21,11 @@ public class RecipeController {
     public Map<String, Object> searchRecipes(@RequestParam String ingredients) {
         return recipeService.getRecipesByIngredients(ingredients);
     }
+    @GetMapping("/{id}")
+    public Map<String, Object> getRecipeDetails(@PathVariable long id) {
+        return recipeService.getRecipeDetails(id);
+    }
+
 
     @GetMapping
     public List<Map<String, Object>> getAllRecipes() {
