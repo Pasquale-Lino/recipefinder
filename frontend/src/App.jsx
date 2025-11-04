@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { apiFetch } from "./api/api";
-import "./App.css";
+import "./styles/global.css";
 import { Link } from "react-router-dom";
 
 function App() {
@@ -29,6 +29,11 @@ function App() {
     <div>
       <h1>Home - Recipe Finder</h1>
       <p>Benvenuto nella tua app di ricette 🍳</p>
+      <p>Scegli cosa fare:</p>
+      <ul>
+        <li><Link to="/recipes">Vedi tutte le ricette</Link></li>
+        <li><Link to="/search">Cerca per ingredienti</Link></li>
+      </ul>
       <Link to="/recipes">Vai alla lista ricette</Link>
       <p>{message}</p>
 

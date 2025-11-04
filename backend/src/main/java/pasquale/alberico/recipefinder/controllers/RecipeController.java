@@ -4,10 +4,11 @@ import org.springframework.web.bind.annotation.*;
 import pasquale.alberico.recipefinder.services.RecipeService;
 
 import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/recipes")
-@CrossOrigin(origins = "http://localhost:5173") // Consente richieste dal frontend React
+@CrossOrigin(origins = "http://localhost:5173")
 public class RecipeController {
 
     private final RecipeService recipeService;
@@ -16,12 +17,16 @@ public class RecipeController {
         this.recipeService = recipeService;
     }
 
-    /**
-     * Endpoint per cercare ricette in base agli ingredienti.
-     * Esempio: GET /api/recipes/search?ingredients=egg,flour,milk
-     */
     @GetMapping("/search")
-    public Map searchRecipes(@RequestParam String ingredients) {
+    public Map<String, Object> searchRecipes(@RequestParam String ingredients) {
         return recipeService.getRecipesByIngredients(ingredients);
+    }
+
+    @GetMapping
+    public List<Map<String, Object>> getAllRecipes() {
+        return List.of(
+                Map.of("nome", "Pasta al pomodoro", "descrizione", "Ricetta semplice e veloce"),
+                Map.of("nome", "Tiramisù", "descrizione", "Dolce classico italiano")
+        );
     }
 }
