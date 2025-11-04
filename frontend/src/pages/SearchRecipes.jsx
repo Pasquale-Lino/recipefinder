@@ -1,12 +1,15 @@
+// src/pages/SearchRecipes.jsx
 import { useState } from "react";
 import { apiFetch } from "../api/api";
 import { Link } from "react-router-dom";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 /**
  * Componente per cercare ricette in base agli ingredienti inseriti dall'utente.
  * - Usa useState per gestire ingredienti, ricette e stato di caricamento.
  * - Chiama il backend (che a sua volta interroga l’API Spoonacular).
  * - Mostra un elenco di ricette con immagine, titolo, tempo e porzioni.
+ * - Utilizza Bootstrap per una migliore resa grafica e layout responsive.
  */
 function SearchRecipes() {
   const [ingredients, setIngredients] = useState("");  // Ingredienti inseriti dall’utente
@@ -35,45 +38,70 @@ function SearchRecipes() {
       setLoading(false);
     }
   };
-// Renderizza il campo di input, il pulsante di ricerca e la lista delle ricette trovate 
-// Ogni ricetta mostra titolo, immagine, tempo di preparazione e porzioni 
-// L'input aggiorna lo stato degli ingredienti al cambiamento
-// La lista delle ricette viene mappata dallo stato delle ricette
-// Ogni elemento della lista ha una chiave unica basata sull'id della ricetta 
-// La funzione di ricerca è asincrona per gestire le chiamate API 
-// Lo stato delle ricette viene inizializzato come array vuoto
-// Lo stato degli ingredienti viene inizializzato come stringa vuota
+
+  // Renderizza il campo di input, il pulsante di ricerca e la lista delle ricette trovate 
+  // Ogni ricetta viene mostrata come card Bootstrap responsive con immagine e dettagli
+  // L'input aggiorna lo stato degli ingredienti al cambiamento
+  // La funzione di ricerca è asincrona per gestire le chiamate API
+  // Lo stato delle ricette viene inizializzato come array vuoto
+  // Lo stato degli ingredienti viene inizializzato come stringa vuota
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>🔍 Cerca ricette per ingredienti</h1>
-      <input
-        type="text"
-        placeholder="es. uova, latte, farina"
-        value={ingredients}
-        onChange={(e) => setIngredients(e.target.value)}
-      />
-      <button onClick={search}>Cerca</button>
+    <div className="container mt-5">
+      {/* Titolo e campo di ricerca */}
+      <h1 className="text-center mb-4">🔍 Cerca ricette per ingredienti</h1>
 
-      {loading && <p>Caricamento...</p>}
-      {error && <p style={{ color: "red" }}>{error}</p>}
+      <div className="input-group mb-4 shadow-sm">
+        <input
+          type="text"
+          className="form-control"
+          placeholder="es. uova, latte, farina"
+          value={ingredients}
+          onChange={(e) => setIngredients(e.target.value)}
+        />
+        <button className="btn btn-primary" onClick={search}>
+          Cerca
+        </button>
+      </div>
 
-      <ul style={{ listStyle: "none", padding: 0 }}>
-  {recipes.map((r) => (
-    <li key={r.id} style={{ marginBottom: "20px", borderBottom: "1px solid #ddd", paddingBottom: "10px" }}>
-      <Link to={`/recipe/${r.id}`} style={{ textDecoration: "none", color: "inherit" }}>
-        <strong>{r.title}</strong><br />
-        <img src={r.image} alt={r.title} width="200" style={{ borderRadius: "10px" }} /><br />
-        <p>
-          🧂 Ingredienti usati: {r.usedIngredientCount} | ❌ Ingredienti mancanti: {r.missedIngredientCount}
-        </p>
-        <p>❤️ Likes: {r.likes}</p>
-      </Link>
-    </li>
-  ))}
-</ul>
+      {/* Messaggi di caricamento o errore */}
+      {loading && <p className="text-center text-muted">Caricamento...</p>}
+      {error && <p className="text-center text-danger">{error}</p>}
 
-      {recipes.length === 0 && !loading && !error && <p>Nessuna ricetta trovata 😢</p>}
+      {/* Lista delle ricette */}
+      <div className="row">
+        {recipes.map((r) => (
+          <div key={r.id} className="col-md-4 mb-4">
+            <div className="card h-100 shadow-sm border-0">
+              <img
+                src={r.image}
+                className="card-img-top"
+                alt={r.title}
+                style={{ borderTopLeftRadius: "10px", borderTopRightRadius: "10px" }}
+              />
+              <div className="card-body">
+                <h5 className="card-title">{r.title}</h5>
+                <p className="card-text text-muted">
+                  🧂 Ingredienti usati: {r.usedIngredientCount}<br />
+                  ❌ Ingredienti mancanti: {r.missedIngredientCount}<br />
+                  ❤️ Likes: {r.likes}
+                </p>
+                <Link
+                  to={`/recipe/${r.id}`}
+                  className="btn btn-outline-success w-100"
+                >
+                  Vedi dettagli
+                </Link>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Messaggio se non ci sono risultati */}
+      {recipes.length === 0 && !loading && !error && (
+        <p className="text-center text-muted mt-4">Nessuna ricetta trovata 😢</p>
+      )}
     </div>
   );
 }

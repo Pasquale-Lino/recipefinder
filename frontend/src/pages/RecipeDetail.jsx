@@ -1,73 +1,120 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { apiFetch } from "../api/api";
+import Navbar from "../components/Navbar";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "../App.css";
 
 function RecipeDetail() {
   const { id } = useParams();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-// Carica i dettagli della ricetta dal backend quando il componente viene montato
-// Uso useEffect per eseguire il fetch quando l'id cambia
-// Imposta lo stato della ricetta con i dati ricevuti
-// Gestisce lo stato di caricamento e gli errori 
-// L'id della ricetta viene ottenuto dai parametri dell'URL
-// La funzione di fetch è asincrona per gestire la chiamata API
 
   useEffect(() => {
     apiFetch(`/recipes/${id}`)
       .then((data) => {
-        console.log("🍽️ Dettagli ricetta:", data);
         setRecipe(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Errore:", err);
-        setError("Errore nel caricamento dei dettagli 😞");
+        console.error("Errore nel caricamento:", err);
+        setError("Errore nel caricamento della ricetta 😞");
         setLoading(false);
       });
   }, [id]);
 
-  if (loading) return <p>Caricamento...</p>;
-  if (error) return <p style={{ color: "red" }}>{error}</p>;
-  if (!recipe) return <p>Nessuna ricetta trovata.</p>;
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <div className="text-center text-light mt-5">Caricamento...</div>
+      </>
+    );
+
+  if (error)
+    return (
+      <>
+        <Navbar />
+        <div className="text-center text-danger mt-5">{error}</div>
+      </>
+    );
+
+  if (!recipe)
+    return (
+      <>
+        <Navbar />
+        <div className="text-center text-muted mt-5">
+          Nessuna ricetta trovata 😢
+        </div>
+      </>
+    );
 
   return (
-    <div style={{ padding: "20px" }}>
-      <Link to="/search">⬅ Torna alla ricerca</Link>
-      <h1>{recipe.title}</h1>
-      <img
-        src={recipe.image}
-        alt={recipe.title}
-        width="400"
-        style={{ borderRadius: "10px" }}
-      />
+    <>
+      <Navbar />
+      <div className="container my-5">
+        <div className="card shadow">
+          <div className="card-body">
+            <h2 className="card-title text-center mb-3">{recipe.title}</h2>
+            <img
+              src={recipe.image}
+              alt={recipe.title}
+              className="img-fluid rounded mx-auto d-block mb-4"
+              style={{ maxWidth: "400px" }}
+            />
 
-      <h3>🍳 Istruzioni</h3>
-      <p>{recipe.instructions || "Nessuna istruzione disponibile."}</p>
+            <div className="text-center mb-3">
+              <span className="badge bg-success me-2">
+                ⏱️ {recipe.readyInMinutes} min
+              </span>
+              <span className="badge bg-secondary">
+                🍽️ {recipe.servings} porzioni
+              </span>
+            </div>
 
-      <h3>🥣 Ingredienti</h3>
-      <ul>
-        {recipe.extendedIngredients?.map((ing) => (
-          <li key={ing.id}>
-            {ing.original}
-          </li>
-        ))}
-      </ul>
+            <h5 className="mt-4">🧂 Ingredienti</h5>
+            <ul className="list-group mb-4">
+              {recipe.extendedIngredients?.map((ing, i) => (
+                <li className="list-group-item" key={i}>
+                  {ing.original}
+                </li>
+              ))}
+            </ul>
 
-      {recipe.nutrition && (
-        <>
-          <h3>⚖️ Valori nutrizionali</h3>
-          <ul>
-            {recipe.nutrition.nutrients.slice(0, 5).map((n, i) => (
-              <li key={i}>
-                {n.name}: {n.amount} {n.unit}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </div>
+            <h5>👨‍🍳 Istruzioni</h5>
+            <div
+              className="alert alert-light"
+              dangerouslySetInnerHTML={{ __html: recipe.instructions || "Nessuna istruzione disponibile" }}
+            ></div>
+
+            <h5>📊 Info nutrizionali</h5>
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Elemento</th>
+                  <th>Quantità</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recipe.nutrition?.nutrients?.slice(0, 6).map((n, i) => (
+                  <tr key={i}>
+                    <td>{n.name}</td>
+                    <td>{n.amount} {n.unit}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="text-center mt-4">
+              <Link to="/search" className="btn btn-success">
+                🔙 Torna alla ricerca
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
 
