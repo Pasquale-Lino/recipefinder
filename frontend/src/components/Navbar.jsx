@@ -1,90 +1,110 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import { useSearch } from "../context/SearchContext";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
-/**
- * Navbar globale dell'app Recipe Finder
- * - Sempre visibile
- * - Barra di ricerca in linea
- * - Brand cliccabile che porta alla home
- * - Menu a tendina per funzionalità future
- */
-function Navbar({ ingredients, setIngredients, onSearch }) {
+function Navbar() {
+  const { searchTerm, setSearchTerm } = useSearch();
   const navigate = useNavigate();
 
-  // Funzione per avviare la ricerca
-  const handleSubmit = (e) => {
+  const handleSearch = (e) => {
     e.preventDefault();
-    if (ingredients.trim()) {
-      onSearch(ingredients);
-      navigate(`/search?ingredients=${encodeURIComponent(ingredients)}`);
+    if (searchTerm.trim()) {
+      navigate(`/search?ingredients=${encodeURIComponent(searchTerm)}`);
     }
   };
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3 shadow sticky-top">
-      <div className="container-fluid">
-        {/* 🍳 Logo / Brand */}
-        <span
-          className="navbar-brand fw-bold me-3"
-          style={{ cursor: "pointer", fontSize: "1.3rem" }}
-          onClick={() => navigate("/home")}
-        >
-          🍳 Recipe Finder
-        </span>
+    <>
+      <nav className="navbar navbar-dark bg-dark fixed-top shadow-sm">
+        <div className="container-fluid px-4 d-flex align-items-center">
+          {/* 🍳 Titolo */}
+          <span
+            className="navbar-brand fw-bold text-warning me-3"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/home")}
+          >
+            🍳 Recipe Finder
+          </span>
 
-        {/* 🔎 Barra di ricerca */}
-        <form
-          className="d-flex flex-grow-1 mx-3"
-          onSubmit={handleSubmit}
-          style={{ maxWidth: "700px" }}
-        >
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Cerca per ingredienti o nome ricetta..."
-            value={ingredients}
-            onChange={(e) => setIngredients(e.target.value)}
-          />
-          <button className="btn btn-success ms-2" type="submit">
-            Cerca
-          </button>
-        </form>
+          {/* 🔍 Barra di ricerca */}
+          <form className="d-flex flex-grow-1 me-3" onSubmit={handleSearch}>
+            <input
+              className="form-control me-2"
+              type="search"
+              placeholder="Cerca ingredienti o ricette..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <button className="btn btn-outline-warning" type="submit">
+              Cerca
+            </button>
+          </form>
 
-        {/* 📋 Menu a tendina per future opzioni */}
-        <div className="dropdown">
+          {/* ☰ Bottone Sidebar */}
           <button
-            className="btn btn-outline-light dropdown-toggle"
+            className="btn btn-outline-light"
             type="button"
-            id="menuDropdown"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#sidebarMenu"
+            aria-controls="sidebarMenu"
           >
             ☰
           </button>
-          <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="menuDropdown">
-            <li>
-              <button className="dropdown-item" onClick={() => navigate("/recipes")}>
-                📖 Tutte le ricette
-              </button>
+        </div>
+      </nav>
+
+      {/* 🧭 Sidebar (Bootstrap Offcanvas) */}
+      <div
+        className="offcanvas offcanvas-end bg-dark text-light"
+        tabIndex="-1"
+        id="sidebarMenu"
+        aria-labelledby="sidebarLabel"
+      >
+        <div className="offcanvas-header border-bottom border-secondary">
+          <h5 className="offcanvas-title text-warning" id="sidebarLabel">
+            🍽️ Menu
+          </h5>
+          <button
+            type="button"
+            className="btn-close btn-close-white"
+            data-bs-dismiss="offcanvas"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div className="offcanvas-body">
+          <ul className="list-unstyled">
+            <li className="mb-3">
+              <a
+                href="/home"
+                className="text-light text-decoration-none"
+                data-bs-dismiss="offcanvas"
+              >
+                🏠 Home
+              </a>
             </li>
-            <li>
-              <button className="dropdown-item" onClick={() => navigate("/favorites")}>
-                ❤️ Preferiti (in arrivo)
-              </button>
+            <li className="mb-3">
+              <a
+                href="/search"
+                className="text-light text-decoration-none"
+                data-bs-dismiss="offcanvas"
+              >
+                🔍 Cerca ricette
+              </a>
             </li>
-            <li><hr className="dropdown-divider" /></li>
-            <li>
-              <button className="dropdown-item text-muted" disabled>
-                ⚙️ Impostazioni (presto)
-              </button>
+            <li className="mb-3">
+              <a
+                href="/recipes"
+                className="text-light text-decoration-none"
+                data-bs-dismiss="offcanvas"
+              >
+                📖 Le mie ricette
+              </a>
             </li>
           </ul>
         </div>
       </div>
-    </nav>
+    </>
   );
 }
-
 
 export default Navbar;

@@ -49,7 +49,7 @@ function SearchRecipes() {
   return (
     <div className="container mt-5">
       {/* Titolo e campo di ricerca */}
-      <h1 className="text-center mb-4">🔍 Cerca ricette per ingredienti</h1>
+      <h1 className="text-center my-4 py-4">🔍 Cerca ricette per ingredienti</h1>
 
       <div className="input-group mb-4 shadow-sm">
         <input
