@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
+
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 /**
@@ -17,7 +19,7 @@ function HomePage() {
     "🥩 Proteine": ["pollo", "manzo", "uova", "pesce", "tonno", "formaggio"],
     "🥦 Verdure": ["pomodoro", "zucchine", "carote", "cipolla", "peperoni"],
     "🍝 Pasta e Cereali": ["pasta", "riso", "farina", "pane", "patate"],
-    "🧁 Dolci e Dessert": ["farina", "crema", "cioccolato", "zucchero", "burro", "latte", "miele"],
+    "🧁 Dolci e Dessert": ["crema", "cioccolato", "zucchero", "burro", "latte", "miele"],
     "🌿 Spezie e Odori": ["basilico", "rosmarino", "aglio", "sale", "pepe"],
     "🍎 Frutta": ["mela", "banana", "fragole", "limone", "arancia"]
   };
@@ -86,10 +88,10 @@ function HomePage() {
       {/* 🏠 Contenuto Home */}
       <div className="container py-5">
         <h1 className="text-center mb-4">Scegli gli ingredienti 🍽️</h1>
-        <h5 className="text-center text-muted mb-5">
+        <h6 className="text-center text-muted mb-5">
           Seleziona gli ingredienti per cercare le ricette ideali.  
           Clicca sui bottoni per aggiungerli alla barra di ricerca!
-        </h5>
+        </h6>
 
         {/* Categorie di ingredienti */}
         {Object.entries(ingredientCategories).map(([category, items]) => (

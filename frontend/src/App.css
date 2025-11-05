@@ -1,25 +1,41 @@
 /* src/App.css */
 
-/* Manteniamo solo le variabili modificabili in futuro */
 :root {
-  --primary-color: #198754; /* Verde Bootstrap */
-  --secondary-bg: #f8f9fa;  /* Grigio chiaro */
+  --primary-color: #198754; 
+  --secondary-bg: #f8f9fa; 
   
 }
 
-/* Rimuoviamo margini di default */
 body {
-  background-image: url('https://www.marcoboldrini.com/wp-content/uploads/2019/01/supporto-operativo-1000x658.jpg ');
+  position: relative;
+  z-index: 0;
+  background: none !important; /* Rimuove il background principale */
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0; /* Copre tutta la finestra */
+  background-image: url('https://www.marcoboldrini.com/wp-content/uploads/2019/01/supporto-operativo-1000x658.jpg');
   background-size: cover;
   background-position: bottom;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  margin: 0;
-  padding: 0;
+  /* 🔁 specchiamento orizzontale */
+  transform: scaleX(-1);
+  z-index: -1; /* resta dietro tutto */
+  opacity: 1; /* puoi regolare se vuoi un effetto più soft */
 }
+h4 {
+    font-weight: bold;
+}
+
 .text-muted {
-    --bs-text-opacity: 1;
-    color: rgba(0, 0, 0, 0.75) !important;
+    --bs-text-opacity: 4;
+    color: rgba(0, 0, 0, 0.904) !important;
     font-weight:500;
 }
 .text-success {
@@ -40,13 +56,14 @@ body {
     --bs-btn-disabled-color: #fff;
     --bs-btn-disabled-bg: #fd810d;
     --bs-btn-disabled-border-color: #fd8d0d;
+    
 }
 .btn-primary  {
   --bs-btn-bg: rgb(207, 150, 96) !important;
   font-size: large;
-  font-weight: 400;
-
-    --bs-btn-color: #fff;
+  font-weight: 500;
+    
+    --bs-btn-color: #000000;
     --bs-btn-border-color: #ffffff69;
     --bs-btn-hover-color: #fff;
     --bs-btn-hover-bg: #ec892c93;
