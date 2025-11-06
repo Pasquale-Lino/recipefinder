@@ -17,6 +17,7 @@ public class TranslationService {
         ingredientMap.put("burro", "butter");
         ingredientMap.put("zucchero", "sugar");
         ingredientMap.put("olio", "oil");
+        ingredientMap.put("vitello", "veal");
         ingredientMap.put("pomodoro", "tomato");
         ingredientMap.put("formaggio", "cheese");
         ingredientMap.put("sale", "salt");

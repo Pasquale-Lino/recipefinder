@@ -7,11 +7,16 @@ function Navbar() {
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      navigate(`/search?ingredients=${encodeURIComponent(searchTerm)}`);
+  e.preventDefault();
+  // Non navigare più da nessuna parte, aggiorna solo lo stato globale
+  if (searchTerm.trim()) {
+    // Scrolla alla sezione risultati se siamo già in HomePage
+    const resultsSection = document.getElementById("results-section");
+    if (resultsSection) {
+      resultsSection.scrollIntoView({ behavior: "smooth" });
     }
-  };
+  }
+};
 
   return (
     <>
@@ -84,7 +89,7 @@ function Navbar() {
             </li>
             <li className="mb-3">
               <a
-                href="/search"
+                href="/home"
                 className="text-light text-decoration-none"
                 data-bs-dismiss="offcanvas"
               >

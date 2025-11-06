@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import Navbar from "../components/Navbar";
 import { useSearch } from "../context/SearchContext";
+import { apiFetch } from "../api/api";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
@@ -12,8 +12,11 @@ function HomePage() {
   const { searchTerm, setSearchTerm } = useSearch();
  // testo mostrato nella barra di ricerca
   const [selectedIngredients, setSelectedIngredients] = useState([]); // lista ingredienti selezionati
-  const navigate = useNavigate();
+  const [recipes, setRecipes] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
+  
   // Categorie con emoji 🍳
 const ingredientCategories = {
   "🥩 Proteine": [
@@ -60,7 +63,6 @@ const ingredientCategories = {
     { label: "🥯 panini", value: "panini" },
     { label: "🍘 couscous", value: "couscous" },
     { label: "🍜 spaghetti", value: "spaghetti" },
-    { label: "🍛 risotto", value: "risotto" },
     { label: "🥔 gnocchi", value: "gnocchi" },
     { label: "🍕 pizza", value: "pizza" },
   ],
@@ -73,9 +75,6 @@ const ingredientCategories = {
     { label: "🥛 latte", value: "latte" },
     { label: "🧈 burro", value: "burro" },
     { label: "🍯 miele", value: "miele" },
-    { label: "🍪 biscotti", value: "biscotti" },
-    { label: "🥧 crostata", value: "crostata" },
-    { label: "🍰 torta", value: "torta" },
     { label: "🍓 marmellata", value: "marmellata" },
     { label: "🧁 crema pasticcera", value: "crema pasticcera" },
     { label: "🍋 scorza di limone", value: "scorza di limone" },
@@ -142,47 +141,78 @@ const ingredientCategories = {
   ],
 };
 
-
+// 🔁 Aggiorna il searchTerm globale ogni volta che cambia la selezione
+  useEffect(() => {
+    setSearchTerm(selectedIngredients.join(", "));
+  }, [selectedIngredients, setSearchTerm]);
 
   /** 🧂 Seleziona o deseleziona un ingrediente */
-  const toggleIngredient = (value) => {
-  setSelectedIngredients((prev) => {
-    const exists = prev.includes(value);
-    const updated = exists
-      ? prev.filter((v) => v !== value)
-      : [...prev, value];
-
-    // ✅ aggiorna la barra di ricerca nella Navbar (stato globale)
-    setSearchTerm(updated.join(", "));
-
-    return updated;
-  });
-};
-  /** 🔍 Avvia ricerca */
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      navigate(`/search?ingredients=${encodeURIComponent(searchTerm)}`);
-    }
+ const toggleIngredient = (value) => {
+    setSelectedIngredients((prev) => {
+      const exists = prev.includes(value);
+      return exists ? prev.filter((v) => v !== value) : [...prev, value];
+    });
   };
 
-  return (
-    <div className="container py-5">
-        <h1 className="text-center mb-4">Scegli gli ingredienti 🍽️</h1>
-        <h6 className="text-center text-muted mb-5">
-          Inserisci i tuoi ingredienti sulla barra di ricerca o clicca sugli ingredienti
-          sottostanti per trovarne le ricette!
-        </h6>
+  /** 🔍 Avvia ricerca */
+  // Effettua la ricerca delle ricette con gli ingredienti selezionati
+  const handleSearch = async () => {
+    // Evita ricerca vuota
+    if (!searchTerm.trim()) return;
+    // Mostra loading
+    setLoading(true);
+    // Resetta errori
+    setError("");
+    // Pulisci le ricette precedenti
+    setRecipes([]);
+    try {
+      // Effettua la chiamata API per cercare ricette con gli ingredienti selezionati
+      // Usa apiFetch per fare la chiamata API
+      const data = await apiFetch(
+      `/recipes/search?ingredients=${encodeURIComponent(searchTerm)}`
+    );
+      // e aggiorna lo stato delle ricette
+      setRecipes(data.results || []);
+    } catch (err) {
+      console.error("Errore ricerca:", err);
+      setError("Errore nel recupero delle ricette 😞");
+    } finally {
+      // Nascondi loading
+      setLoading(false);
+    }
+    
+  }; 
 
+// 🔁 Ogni volta che cambia il testo nella Navbar, lancia la ricerca
+useEffect(() => {
+  if (searchTerm.trim()) {
+    handleSearch();
+  }
+}, [searchTerm]); // ⬅️ dipende solo dal valore globale
+
+
+   return (
+    <div className="container py-5">
+      <h1 className="text-center mb-4">Scegli gli ingredienti 🍽️</h1>
+      <h6 className="text-center text-muted mb-5">
+        Clicca sugli ingredienti o scrivili nella barra di ricerca in alto
+      </h6>
+
+      {/* 🔘 Bottoni ingredienti */}
+      {/*  Mappa le categorie e i loro ingredienti*/}
       {Object.entries(ingredientCategories).map(([category, items]) => (
         <div key={category} className="mb-4">
           <h4 className="text-success mb-3">{category}</h4>
           <div className="d-flex flex-wrap justify-content-center gap-2">
+          {/*Mappa gli ingredienti di ogni categoria */}
             {items.map(({ label, value }) => {
               const isSelected = selectedIngredients.includes(value);
               return (
                 <button
                   key={value}
-                  className={`btn ${isSelected ? "btn-success" : "btn-outline-success"} rounded-pill px-3`}
+                  className={`btn ${
+                    isSelected ? "btn-success" : "btn-outline-success"
+                  } rounded-pill px-3`}
                   onClick={() => toggleIngredient(value)}
                   title={value}
                 >
@@ -194,11 +224,63 @@ const ingredientCategories = {
         </div>
       ))}
 
-      <div className="mt-5">
-        <button className="btn btn-success btn-lg" onClick={handleSearch}>
-          🔎 Cerca ricette
+       {/* 🔍 Pulsante ricerca */}
+      <div className="text-center mt-4">
+        <button
+          className="btn btn-success btn-lg px-5"
+          onClick={handleSearch}
+          disabled={loading}
+        >
+          {loading ? "Caricamento..." : "🔎 Cerca ricette"}
         </button>
       </div>
+
+      {/* ⚠️ Errori o caricamento */}
+      {error && <p className="text-center text-danger mt-3">{error}</p>}
+
+      {/* 🧾 Risultati */}
+<div id="results-section" className="row mt-5">
+  {/* Mappa le ricette trovate */}
+  {recipes.map((r) => (
+    <div key={r.id} className="col-6 col-md-3 mb-4">
+      <Link
+        to={`/recipe/${r.id}`}
+        className="text-decoration-none text-dark"
+        style={{ display: "block" }}
+      >
+        <div className="card h-100 shadow-sm border-0">
+          <img
+            src={r.image}
+            className="card-img-top"
+            alt={r.title}
+            style={{
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
+              height: "180px",
+              objectFit: "cover",
+            }}
+          />
+          <div className="card-body">
+            <h6 className="card-title fw-bold">{r.title}</h6>
+            <p className="card-text text-muted small mb-0">
+              🧂 Usati: {r.usedIngredientCount} — ❌ Mancanti:{" "}
+              {r.missedIngredientCount}
+            </p>
+          </div>
+        </div>
+      </Link>
+    </div>
+  ))}
+</div>
+
+
+
+      {/* Nessuna ricetta */}
+      {recipes.length === 0 && !loading && !error && (
+        <p className="text-center text-muted mt-4">
+          Nessuna ricetta trovata 😢
+        </p>
+      )}
     </div>
   );
 }
