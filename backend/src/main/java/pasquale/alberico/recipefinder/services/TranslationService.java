@@ -25,6 +25,7 @@ public class TranslationService {
         ingredientMap.put("pollo", "chicken");
         ingredientMap.put("carne", "meat");
         ingredientMap.put("pesce", "fish");
+        ingredientMap.put("mozzarella", "mozzarella cheese");
 
         ingredientMap.put("mele", "apples");
         ingredientMap.put("banane", "bananas");

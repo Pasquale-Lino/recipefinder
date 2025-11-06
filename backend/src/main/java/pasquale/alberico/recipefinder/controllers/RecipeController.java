@@ -27,11 +27,4 @@ public class RecipeController {
     }
 
 
-    @GetMapping
-    public List<Map<String, Object>> getAllRecipes() {
-        return List.of(
-                Map.of("nome", "Pasta al pomodoro", "descrizione", "Ricetta semplice e veloce"),
-                Map.of("nome", "Tiramisù", "descrizione", "Dolce classico italiano")
-        );
-    }
 }

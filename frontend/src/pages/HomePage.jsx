@@ -2,6 +2,7 @@ import { useSearch } from "../context/SearchContext";
 import { apiFetch } from "../api/api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { translateText } from "../utils/translate";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
@@ -15,11 +16,13 @@ function HomePage() {
   const [recipes, setRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [hasSearched, setHasSearched] = useState(false);
+
 
   
   // Categorie con emoji 🍳
 const ingredientCategories = {
-  "🥩 Proteine": [
+  "🥩 Carne, Pesce, Latticini...": [
     { label: "🐓 pollo", value: "pollo" },
     { label: "🐄 manzo", value: "manzo" },
     { label: "🥚 uova", value: "uova" },
@@ -27,6 +30,7 @@ const ingredientCategories = {
     { label: "🐖 maiale", value: "maiale" },
     { label: "🍗 tacchino", value: "tacchino" },
     { label: "🧀 formaggio", value: "formaggio" },
+    { label: "⚪ mozzarella", value: "mozzarella" },
     { label: "🐟 tonno", value: "tonno" },
     { label: "🍤 gamberi", value: "gamberi" },
     { label: "🦑 calamari", value: "calamari" },
@@ -64,7 +68,6 @@ const ingredientCategories = {
     { label: "🍘 couscous", value: "couscous" },
     { label: "🍜 spaghetti", value: "spaghetti" },
     { label: "🥔 gnocchi", value: "gnocchi" },
-    { label: "🍕 pizza", value: "pizza" },
   ],
 
   "🧁 Dolci e Dessert": [
@@ -161,18 +164,30 @@ const ingredientCategories = {
     if (!searchTerm.trim()) return;
     // Mostra loading
     setLoading(true);
+    // Segna che è stata fatta una ricerca
+    setHasSearched(true);
     // Resetta errori
     setError("");
     // Pulisci le ricette precedenti
     setRecipes([]);
+
     try {
       // Effettua la chiamata API per cercare ricette con gli ingredienti selezionati
       // Usa apiFetch per fare la chiamata API
       const data = await apiFetch(
       `/recipes/search?ingredients=${encodeURIComponent(searchTerm)}`
     );
-      // e aggiorna lo stato delle ricette
-      setRecipes(data.results || []);
+
+      // Traduci i titoli delle ricette trovate  
+      const translatedResults = await Promise.all(
+  (data.results || []).map(async (r) => ({
+    ...r,
+    title: await translateText(r.title),
+  }))
+);
+
+    // Aggiorna lo stato con i titoli tradotti
+      setRecipes(translatedResults);
     } catch (err) {
       console.error("Errore ricerca:", err);
       setError("Errore nel recupero delle ricette 😞");
@@ -180,7 +195,6 @@ const ingredientCategories = {
       // Nascondi loading
       setLoading(false);
     }
-    
   }; 
 
 // 🔁 Ogni volta che cambia il testo nella Navbar, lancia la ricerca
@@ -273,16 +287,15 @@ useEffect(() => {
   ))}
 </div>
 
-
-
       {/* Nessuna ricetta */}
-      {recipes.length === 0 && !loading && !error && (
-        <p className="text-center text-muted mt-4">
-          Nessuna ricetta trovata 😢
-        </p>
-      )}
+    {hasSearched && recipes.length === 0 && !loading && !error && (
+    <p className="text-center text-muted mt-4">
+    Nessuna ricetta trovata 😢
+    </p>
+    )}
+
     </div>
-  );
+);
 }
 
 export default HomePage;
