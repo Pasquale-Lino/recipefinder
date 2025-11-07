@@ -1,0 +1,38 @@
+package pasquale.alberico.recipefinder.entities;
+
+import jakarta.persistence.*;
+import pasquale.alberico.recipefinder.enums.Role;
+import java.util.*;
+
+@Entity
+@Table(name = "users")
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String username;
+    private String email;
+    private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role = Role.USER;
+
+    @ManyToMany
+    @JoinTable(
+            name = "user_favorites",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "recipe_id")
+    )
+    private List<Recipe> favorites = new ArrayList<>();
+
+    public User() {}
+    public User(String username, String email, String password, Role role) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
+    // Getters & Setters
+}

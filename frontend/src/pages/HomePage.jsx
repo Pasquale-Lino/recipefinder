@@ -171,31 +171,31 @@ const ingredientCategories = {
     // Pulisci le ricette precedenti
     setRecipes([]);
 
-    try {
-      // Effettua la chiamata API per cercare ricette con gli ingredienti selezionati
-      // Usa apiFetch per fare la chiamata API
-      const data = await apiFetch(
+
+  try {
+    const data = await apiFetch(
       `/recipes/search?ingredients=${encodeURIComponent(searchTerm)}`
     );
+    const results = data.results || [];
 
-      // Traduci i titoli delle ricette trovate  
-      const translatedResults = await Promise.all(
-  (data.results || []).map(async (r) => ({
-    ...r,
-    title: await translateText(r.title),
-  }))
-);
+    // Traduci titoli (opzionale)
+    const translatedResults = await Promise.all(
+      results.map(async (r) => ({
+        ...r,
+        title: await translateText(r.title),
+      }))
+    );
 
-    // Aggiorna lo stato con i titoli tradotti
-      setRecipes(translatedResults);
-    } catch (err) {
-      console.error("Errore ricerca:", err);
-      setError("Errore nel recupero delle ricette 😞");
-    } finally {
-      // Nascondi loading
-      setLoading(false);
-    }
-  }; 
+    setRecipes(translatedResults);
+  } catch (err) {
+    console.error("Errore ricerca:", err);
+    setError("Impossibile recuperare le ricette da Spoonacular 😞");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
 
 // 🔁 Ogni volta che cambia il testo nella Navbar, lancia la ricerca
 useEffect(() => {
