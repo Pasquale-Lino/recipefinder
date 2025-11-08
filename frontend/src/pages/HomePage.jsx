@@ -207,8 +207,8 @@ useEffect(() => {
 
    return (
     <div className="container py-5">
-      <h1 className="text-center mb-4">Scegli gli ingredienti 🍽️</h1>
-      <h6 className="text-center text-muted mb-5">
+      <h2 className="text-center pt-4 mb-4">Scegli gli ingredienti 🍽️</h2>
+      <h6 className="text-center text-muted mb-3">
         Clicca sugli ingredienti o scrivili nella barra di ricerca in alto
       </h6>
 

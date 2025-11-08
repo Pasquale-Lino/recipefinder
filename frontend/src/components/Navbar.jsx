@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
+import { useAuth } from "../hooks/useAuth";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Navbar() {
   const { searchTerm, setSearchTerm } = useSearch();
+    const { user, login, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
@@ -40,8 +42,8 @@ function Navbar() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="btn btn-outline-warning" type="submit">
-              Cerca
+            <button className="btn btn-outline-warning " type="submit">
+             Cerca
             </button>
           </form>
 
@@ -77,6 +79,20 @@ function Navbar() {
           ></button>
         </div>
         <div className="offcanvas-body">
+          {user ? (
+        <>
+          <span>Ciao, {user.name}</span>
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <button onClick={() => login("admin@demo.it")}>Login Admin Demo</button>
+      )}
+          <button
+  className="btn btn-outline-light"
+  data-bs-toggle="modal"
+  data-bs-target="#loginModal"
+>🔑 Login
+</button>
           <ul className="list-unstyled">
             <li className="mb-3">
               <a
@@ -106,6 +122,7 @@ function Navbar() {
               </a>
             </li>
           </ul>
+          
         </div>
       </div>
     </>
