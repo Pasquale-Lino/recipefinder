@@ -1,6 +1,6 @@
 import { useSearch } from "../context/SearchContext";
 import { apiFetch } from "../api/api";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { translateText } from "../utils/translate";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -159,7 +159,7 @@ const ingredientCategories = {
 
   /** 🔍 Avvia ricerca */
   // Effettua la ricerca delle ricette con gli ingredienti selezionati
-  const handleSearch = async () => {
+  const handleSearch = useCallback(async () => {
     // Evita ricerca vuota
     if (!searchTerm.trim()) return;
     // Mostra loading
@@ -193,7 +193,7 @@ const ingredientCategories = {
   } finally {
     setLoading(false);
   }
-};
+},[searchTerm]);
 
 
 
@@ -202,7 +202,7 @@ useEffect(() => {
   if (searchTerm.trim()) {
     handleSearch();
   }
-}, [searchTerm]); // ⬅️ dipende solo dal valore globale
+}, [searchTerm, handleSearch]); // ⬅️ dipende solo dal valore globale
 
 
    return (
