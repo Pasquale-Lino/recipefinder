@@ -78,3 +78,9 @@ h4 {
     --bs-btn-disabled-bg: #fd810d;
     --bs-btn-disabled-border-color: #fd8d0d;
 }
+.customProfile {
+  margin: 0 auto;
+  padding: 6rem 2rem;
+  max-width: 1100px;
+  min-height: 100vh;      /* altezza piena per coerenza */
+}

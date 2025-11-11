@@ -3,7 +3,11 @@ package pasquale.alberico.recipefinder.entities;
 import jakarta.persistence.*;
 import pasquale.alberico.recipefinder.enums.Role;
 import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "users")
 public class User {

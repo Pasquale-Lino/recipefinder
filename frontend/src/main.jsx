@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage.jsx";
 import RecipeDetail from "./pages/RecipeDetail.jsx";
 import ProfilePage from "./pages/ProfilePage.jsx";
-
+import CreateRecipePage from "./pages/CreateRecipePage.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import LoginModal from "./components/LoginModal.jsx";
 import { AuthProvider } from "./context/AuthProvider.jsx";
@@ -30,8 +30,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
                   <PrivateRoute>
                     <ProfilePage />
                   </PrivateRoute>
-                }
-              />
+                        }/>
+              <Route path="/create-recipe" 
+              element={
+                         <PrivateRoute>
+                         <CreateRecipePage />
+                         </PrivateRoute>
+                      }/>
             </Route>
           </Routes>
         </BrowserRouter>

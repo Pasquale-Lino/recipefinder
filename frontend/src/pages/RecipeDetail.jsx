@@ -1,34 +1,34 @@
+// src/pages/RecipeDetail.jsx
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { apiFetch } from "../api/api";
 import { translateText } from "../utils/translate";
+import { useAuth } from "../hooks/useAuth";
 import Navbar from "../components/Navbar";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
 function RecipeDetail() {
   const { id } = useParams();
+  const { user } = useAuth();
   const [recipe, setRecipe] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [isFavorite, setIsFavorite] = useState(false);
 
-  // 🔍 Funzione helper per capire se serve tradurre
   const needsTranslation = (text) => {
     if (!text) return false;
-    // Se contiene parole comuni inglesi → probabilmente va tradotto
     const englishHints = ["the", "and", "with", "in", "of", "mix", "bake", "add", "minutes"];
     return englishHints.some((word) => text.toLowerCase().includes(word));
   };
 
+  // 🔹 Carica dettagli ricetta + stato preferito
   useEffect(() => {
-    // usiamo async function dentro useEffect
-    // perché useEffect non può essere async direttamente
-    // a cosa serve async? → per usare await dentro che serve a chiamate API asincrone e promesse
     const fetchRecipe = async () => {
       try {
         const data = await apiFetch(`/recipes/${id}`);
 
-        // 🔁 Verifica e traduci solo se necessario
+        // 🔁 Traduzione automatica
         const translatedTitle = needsTranslation(data.title)
           ? await translateText(data.title)
           : data.title;
@@ -36,9 +36,7 @@ function RecipeDetail() {
         const translatedInstructions = needsTranslation(data.instructions)
           ? await translateText(data.instructions)
           : data.instructions;
-        // Traduci anche gli ingredienti se necessario
-        // Usa Promise.all per attendere tutte le traduzioni
-        // prima mappa gli ingredienti con le traduzioni
+
         const translatedIngredients = await Promise.all(
           (data.extendedIngredients || []).map(async (ing) => ({
             ...ing,
@@ -48,13 +46,21 @@ function RecipeDetail() {
           }))
         );
 
-        // ✅ Aggiorna lo stato con i dati (tradotti se serviva)
         setRecipe({
           ...data,
           title: translatedTitle,
           instructions: translatedInstructions,
           extendedIngredients: translatedIngredients,
         });
+
+        // 🔹 Se loggato, controlla se è tra i preferiti
+        if (user) {
+          const favorites = await fetch(`http://localhost:8080/api/favorites/${user.id}`);
+          const favList = await favorites.json();
+          const found = favList.some((fav) => fav.id === Number(id));
+          setIsFavorite(found);
+          console.log("💾 Preferiti caricati:", favList);
+        }
       } catch (err) {
         console.error("Errore nel caricamento:", err);
         setError("Errore nel caricamento della ricetta 😞");
@@ -64,9 +70,28 @@ function RecipeDetail() {
     };
 
     fetchRecipe();
-  }, [id]);
+  }, [id, user]);
 
-  // 🌀 Stati di caricamento / errore
+  // ❤️ Aggiunge o rimuove dai preferiti
+  const toggleFavorite = async () => {
+    if (!user) {
+      alert("Effettua il login per salvare nei preferiti 🔐");
+      return;
+    }
+
+    const method = isFavorite ? "DELETE" : "POST";
+    const url = `http://localhost:8080/api/favorites/${user.id}/${id}`;
+
+    try {
+      const res = await fetch(url, { method });
+      const msg = await res.text();
+      console.log(msg);
+      setIsFavorite(!isFavorite);
+    } catch (err) {
+      console.error("Errore nel salvataggio preferito:", err);
+    }
+  };
+
   if (loading)
     return (
       <>
@@ -93,12 +118,11 @@ function RecipeDetail() {
       </>
     );
 
-  // 🧾 Rendering finale
   return (
     <>
       <Navbar />
-      <div className="container my-5">
-        <div className="card shadow">
+      <div className="container my-5 d-flex justify-content-center">
+        <div className="card shadow" style={{ maxWidth: "800px" }}>
           <div className="card-body">
             <h2 className="card-title text-center mb-3">{recipe.title}</h2>
 
@@ -118,6 +142,18 @@ function RecipeDetail() {
               </span>
             </div>
 
+            {/* ❤️ Bottone Preferiti */}
+            {user && (
+              <div className="text-center mb-3">
+                <button
+                  onClick={toggleFavorite}
+                  className={`btn ${isFavorite ? "btn-danger" : "btn-outline-danger"}`}
+                >
+                  {isFavorite ? "💔 Rimuovi dai preferiti" : "❤️ Aggiungi ai preferiti"}
+                </button>
+              </div>
+            )}
+
             <h5 className="mt-4">🧂 Ingredienti</h5>
             <ul className="list-group mb-4">
               {recipe.extendedIngredients?.map((ing, i) => (
@@ -134,26 +170,6 @@ function RecipeDetail() {
                 __html: recipe.instructions || "Nessuna istruzione disponibile",
               }}
             ></div>
-
-            <h5>📊 Info nutrizionali</h5>
-            <table className="table table-striped">
-              <thead>
-                <tr>
-                  <th>Elemento</th>
-                  <th>Quantità</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recipe.nutrition?.nutrients?.slice(0, 6).map((n, i) => (
-                  <tr key={i}>
-                    <td>{n.name}</td>
-                    <td>
-                      {n.amount} {n.unit}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
 
             <div className="text-center mt-4">
               <Link to="/home" className="btn btn-success">

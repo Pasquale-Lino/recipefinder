@@ -109,49 +109,50 @@ function Navbar() {
           {/* 📋 Menu link */}
           <ul className="list-unstyled">
             <li className="mb-3">
-              <Link
-                to="/home"
-                className="text-light text-decoration-none"
+              <button
+                className="btn btn-link text-light text-decoration-none p-0"
                 data-bs-dismiss="offcanvas"
-              >
+                onClick={() => navigate("/home")}
+                >
                 🏠 Home
-              </Link>
+              </button>
+
             </li>
             <li className="mb-3">
-              <Link
-                to="/home"
-                className="text-light text-decoration-none"
+              <button
+                className="btn btn-link text-light text-decoration-none p-0"
                 data-bs-dismiss="offcanvas"
+                onClick={() => navigate("/home")}
               >
                 🔍 Cerca ricette
-              </Link>
+              </button>
             </li>
 
             {/* 👤 Mostra solo se loggato */}
             {user && (
               <>
                 <li className="mb-3">
-                  <Link
-                    to="/profile"
-                    className="text-light text-decoration-none"
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     👤 Il mio profilo
-                  </Link>
+                  </button>
                 </li>
                 <li className="mb-3">
-                  <Link
-                    to="/my-recipes"
-                    className="text-light text-decoration-none"
+                  <button
+                    onClick={() => navigate("/my-recipes")}
+                    className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     📖 Le mie ricette
-                  </Link>
+                  </button>
                 </li>
                 <li className="mb-3">
                   <Link
-                    to="/favorites"
-                    className="text-light text-decoration-none"
+                    onClick={() => navigate("/favorites")}
+                    className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     ❤️ Preferiti
