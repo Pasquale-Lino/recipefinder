@@ -1,12 +1,10 @@
-// src/main/java/pasquale/alberico/recipefinder/controllers/TestEmailController.java
 package pasquale.alberico.recipefinder.controllers;
 
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 import pasquale.alberico.recipefinder.services.EmailService;
 
 @RestController
-@RequestMapping("/api/test-email")
-@CrossOrigin(origins = "http://localhost:5173")
 public class TestEmailController {
 
     private final EmailService emailService;
@@ -15,9 +13,9 @@ public class TestEmailController {
         this.emailService = emailService;
     }
 
-    @GetMapping
-    public String sendTestEmail(@RequestParam String to) {
-        emailService.sendVerificationEmail(to, "TEST-TOKEN-123");
-        return "✅ Email di test inviata a: " + to;
+    @GetMapping("/api/test-email")
+    public String testEmail() {
+        emailService.sendWelcomeEmail("la_tua_email_personale@gmail.com", "TestUser");
+        return "Email inviata!";
     }
 }

@@ -38,7 +38,7 @@ public class AuthController {
         newUser.setVerified(false);
         userRepository.save(newUser);
 
-        emailService.sendVerificationEmail(newUser.getEmail(), newUser.getVerificationToken());
+        emailService.sendWelcomeEmail(newUser.getEmail(), newUser.getVerificationToken());
         return "✅ Registrazione completata! Controlla la tua email per confermare.";
     }
 
