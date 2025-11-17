@@ -6,9 +6,9 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 public class MGSamples {
     public static JsonNode sendSimpleMessage() throws UnirestException {
-        String apiKey = System.getenv("1d75daf6b500e66b1069d29800e692d6-88b1ca9f-579c1a92");
+        String apiKey = System.getenv("${MAILGUN_API_KEY}");
         if (apiKey == null) {
-            apiKey = "1d75daf6b500e66b1069d29800e692d6-88b1ca9f-579c1a92";
+            apiKey = "${MAILGUN_API_KEY}";
         }
 
         HttpResponse<JsonNode> request = Unirest.post("https://api.mailgun.net/v3/sandbox4c1601845bcf4757a774ebae080d0b14.mailgun.org/messages")
