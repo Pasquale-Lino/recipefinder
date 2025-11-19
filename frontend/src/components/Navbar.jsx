@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useSearch } from "../context/SearchContext";
 import { useAuth } from "../hooks/useAuth";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -9,7 +9,6 @@ function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
-  /** Gestisce la ricerca senza ricaricare la pagina */
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchTerm.trim()) {
@@ -22,10 +21,8 @@ function Navbar() {
 
   return (
     <>
-      {/* 🔝 NAVBAR PRINCIPALE */}
       <nav className="navbar navbar-dark bg-dark fixed-top shadow-sm">
         <div className="container-fluid px-4 d-flex align-items-center">
-          {/* 🍳 Brand */}
           <span
             className="navbar-brand fw-bold text-warning me-3"
             style={{ cursor: "pointer" }}
@@ -34,7 +31,6 @@ function Navbar() {
             🍳 Recipe Finder
           </span>
 
-          {/* 🔍 Barra di ricerca */}
           <form className="d-flex flex-grow-1 me-3" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
@@ -48,7 +44,6 @@ function Navbar() {
             </button>
           </form>
 
-          {/* ☰ Bottone Sidebar */}
           <button
             className="btn btn-outline-light"
             type="button"
@@ -61,7 +56,6 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* 🧭 SIDEBAR */}
       <div
         className="offcanvas offcanvas-end bg-dark text-light"
         tabIndex="-1"
@@ -84,7 +78,9 @@ function Navbar() {
           {/* 👤 Info utente */}
           {user ? (
             <>
-              <p className="mb-3">👋 Ciao, <strong>{user.name}</strong></p>
+              <p className="mb-3">
+                👋 Ciao, <strong>{user.username || user.email}</strong>
+              </p>
               <button
                 className="btn btn-outline-danger mb-4 w-100"
                 onClick={() => {
@@ -97,13 +93,22 @@ function Navbar() {
               </button>
             </>
           ) : (
-            <button
-              className="btn btn-warning mb-4 w-100"
-              data-bs-toggle="modal"
-              data-bs-target="#loginModal"
-            >
-              🔑 Accedi
-            </button>
+            <>
+              <button
+                className="btn btn-warning mb-2 w-100"
+                data-bs-toggle="modal"
+                data-bs-target="#loginModal"
+              >
+                🔑 Accedi
+              </button>
+              <button
+                className="btn btn-outline-light mb-4 w-100"
+                onClick={() => navigate("/register")}
+                data-bs-dismiss="offcanvas"
+              >
+                📝 Registrati
+              </button>
+            </>
           )}
 
           {/* 📋 Menu link */}
@@ -113,10 +118,9 @@ function Navbar() {
                 className="btn btn-link text-light text-decoration-none p-0"
                 data-bs-dismiss="offcanvas"
                 onClick={() => navigate("/home")}
-                >
+              >
                 🏠 Home
               </button>
-
             </li>
             <li className="mb-3">
               <button
@@ -128,7 +132,6 @@ function Navbar() {
               </button>
             </li>
 
-            {/* 👤 Mostra solo se loggato */}
             {user && (
               <>
                 <li className="mb-3">
@@ -142,7 +145,7 @@ function Navbar() {
                 </li>
                 <li className="mb-3">
                   <button
-                    onClick={() => navigate("/my-recipes")}
+                    onClick={() => navigate("/create-recipe")}
                     className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
@@ -150,13 +153,13 @@ function Navbar() {
                   </button>
                 </li>
                 <li className="mb-3">
-                  <Link
-                    onClick={() => navigate("/favorites")}
+                  <button
+                    onClick={() => navigate("/profile")}
                     className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     ❤️ Preferiti
-                  </Link>
+                  </button>
                 </li>
               </>
             )}

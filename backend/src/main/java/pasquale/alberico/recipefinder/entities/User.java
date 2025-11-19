@@ -30,16 +30,21 @@ public class User {
     // ✅ Campi per verifica email
     @Column(nullable = false, name="is_verified")
     private boolean verified = false;
-    @Column(name="verifcation_token")
+    @Column(name="verification_token")
     private String verificationToken;
 
     @ManyToMany
     @JoinTable(
+//Un utente può avere molti preferiti. Una ricetta può essere preferita da molti utenti.
             name = "user_favorites",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "recipe_id")
     )
     private List<Recipe> favorites = new ArrayList<>();
+
+    @Transient //dice a jpa di non salvare il token nel DB
+    private String token;
+
 
     public User() {}
 

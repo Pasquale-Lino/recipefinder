@@ -1,34 +1,42 @@
-// src/pages/ProfilePage.jsx
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { apiFetch } from "../api/api"; // ⬅ usa apiFetch per il token JWT
 
 function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { user, logout } = useAuth(); // 🔐 user contiene { id, email, token }
   const [myRecipes, setMyRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  // 🔹 Carica ricette create e preferiti dal DB
+  // 🟦 Al mount carichiamo ricette e preferiti
   useEffect(() => {
+    // Se l'utente non è loggato → non fare nulla
     if (!user) return;
 
     const loadData = async () => {
+      // 🔹 RICETTE SALVATE IN LOCALE
       const savedRecipes = JSON.parse(localStorage.getItem("myRecipes") || "[]");
       setMyRecipes(savedRecipes);
 
+      // 🔹 VERIFICA CHE user.id ESISTA
+      if (!user.id) {
+        console.error("❌ ERRORE: user.id è undefined! User ricevuto:", user);
+        return;
+      }
+
       try {
-        const res = await fetch(`http://localhost:8080/api/favorites/${user.id}`);
-        const data = await res.json();
-        console.log("💾 Preferiti dal DB:", data);
+        // 🔥 CHIAMATA PROTETTA AL BACKEND CON JWT
+        const data = await apiFetch(`/favorites/${user.id}`);
         setFavorites(data);
-      } catch (err) {
-        console.error("Errore nel caricamento dei preferiti:", err);
+      } catch (error) {
+        console.error("❌ Errore nel caricamento dei preferiti:", error);
       }
     };
 
     loadData();
   }, [user]);
 
+  // 🔐 Se non sei loggato → mostra invito al login
   if (!user) {
     return (
       <div className="text-center py-5">
@@ -47,17 +55,19 @@ function ProfilePage() {
   return (
     <div className="customProfile">
       <div className="container py-5">
+        {/* 👤 Header profilo */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2>👋 Benvenuto, {user.name || user.email}</h2>
+          <h2>👋 Benvenuto, {user.username || user.email}</h2>
           <button className="btn btn-outline-success" onClick={logout}>
             🚪 Esci
           </button>
         </div>
 
         <div className="row">
-          {/* 📒 Le mie ricette */}
+          {/* 📒 --- LE MIE RICETTE --- */}
           <div className="col-md-6 mb-4">
             <h4>📒 Le mie ricette</h4>
+
             {myRecipes.length === 0 ? (
               <p className="text-muted">Nessuna ricetta creata finora.</p>
             ) : (
@@ -69,14 +79,16 @@ function ProfilePage() {
                 ))}
               </ul>
             )}
+
             <Link to="/create-recipe" className="btn btn-success mt-2">
               ➕ Crea una nuova ricetta
             </Link>
           </div>
 
-          {/* ❤️ Preferiti */}
+          {/* ❤️ --- RICETTE PREFERITE --- */}
           <div className="col-md-6 mb-4">
             <h4>❤️ Ricette preferite</h4>
+
             {favorites.length === 0 ? (
               <p className="text-muted">Non hai ancora salvato nessuna ricetta.</p>
             ) : (
@@ -94,6 +106,7 @@ function ProfilePage() {
           </div>
         </div>
 
+        {/* 👑 ADMIN PANEL (se utente è admin) */}
         {user.role === "ADMIN" && (
           <div className="border-top pt-4 mt-4">
             <h4>👑 Pannello Admin</h4>

@@ -1,4 +1,3 @@
-// src/main/java/pasquale/alberico/recipefinder/controllers/AuthController.java
 package pasquale.alberico.recipefinder.controllers;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -7,6 +6,7 @@ import pasquale.alberico.recipefinder.entities.User;
 import pasquale.alberico.recipefinder.enums.Role;
 import pasquale.alberico.recipefinder.repositories.UserRepository;
 import pasquale.alberico.recipefinder.services.EmailService;
+import pasquale.alberico.recipefinder.security.JWTTools;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -18,11 +18,15 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
+    private final JWTTools jwtTools;  // ⬅ AGGIUNGERE QUESTO
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public AuthController(UserRepository userRepository, EmailService emailService) {
+    // ⬅ AGGIUNGIAMO jwtTools AL COSTRUTTORE
+    public AuthController(UserRepository userRepository, EmailService emailService, JWTTools jwtTools) {
         this.userRepository = userRepository;
         this.emailService = emailService;
+        this.jwtTools = jwtTools;
     }
 
     // 🧑‍💻 Registrazione con token email
@@ -36,15 +40,19 @@ public class AuthController {
         newUser.setRole(Role.USER);
         newUser.setVerificationToken(UUID.randomUUID().toString());
         newUser.setVerified(false);
+
         userRepository.save(newUser);
 
-        emailService.sendWelcomeEmail(newUser.getEmail(), newUser.getVerificationToken());
+        emailService.sendWelcomeEmail(newUser.getEmail(), newUser.getUsername());
+        emailService.sendVerificationEmail(newUser.getEmail(), newUser.getVerificationToken());
+
         return "✅ Registrazione completata! Controlla la tua email per confermare.";
     }
 
     // ✉️ Verifica email
     @GetMapping("/verify")
     public String verifyUser(@RequestParam String token) {
+
         Optional<User> optionalUser = userRepository.findAll()
                 .stream()
                 .filter(u -> token.equals(u.getVerificationToken()))
@@ -64,17 +72,22 @@ public class AuthController {
 
     // 🔑 Login solo se verificato
     @PostMapping("/login")
-    public Object login(@RequestBody User loginRequest) {
+    public Object login(@RequestBody User loginRequest)
+    {
         User user = userRepository.findByEmail(loginRequest.getEmail());
-        if (user == null) return "❌ Utente non trovato";
 
+        if (user == null) return "❌ Utente non trovato";
         if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
             return "🚫 Password errata";
+        if (!user.isVerified()) return "⚠️ Account non verificato";
 
-        if (!user.isVerified()) return "⚠️ Account non verificato, controlla la tua email.";
+        // 🔥 GENERA TOKEN JWT
+        String token = jwtTools.createToken(user);
 
-        // ❗ Non rimandiamo la password al frontend
-        user.setPassword(null);
+        user.setPassword(null); // mai mandare la password al frontend
+        user.setToken(token);   // campo @Transient → non va nel DB
+
         return user;
     }
+
 }
