@@ -1,5 +1,6 @@
 package pasquale.alberico.recipefinder.controllers;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pasquale.alberico.recipefinder.entities.User;
@@ -8,6 +9,8 @@ import pasquale.alberico.recipefinder.repositories.UserRepository;
 import pasquale.alberico.recipefinder.services.EmailService;
 import pasquale.alberico.recipefinder.security.JWTTools;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -72,22 +75,53 @@ public class AuthController {
 
     // 🔑 Login solo se verificato
     @PostMapping("/login")
-    public Object login(@RequestBody User loginRequest)
-    {
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+
         User user = userRepository.findByEmail(loginRequest.getEmail());
 
-        if (user == null) return "❌ Utente non trovato";
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword()))
-            return "🚫 Password errata";
-        if (!user.isVerified()) return "⚠️ Account non verificato";
+        if (user == null) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", "Utente non trovato"));
+        }
 
-        // 🔥 GENERA TOKEN JWT
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", "Password errata"));
+        }
+
+        if (!user.isVerified()) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("error", "Account non verificato"));
+        }
+
+        // 🔥 Genera token JWT
         String token = jwtTools.createToken(user);
 
-        user.setPassword(null); // mai mandare la password al frontend
-        user.setToken(token);   // campo @Transient → non va nel DB
+        // 🔐 Risposta JSON controllata
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("id", user.getId());
+        responseBody.put("email", user.getEmail());
+        responseBody.put("role", user.getRole());
+        responseBody.put("name", user.getUsername());
+        responseBody.put("token", token);
 
-        return user;
+        return ResponseEntity.ok(responseBody);
     }
+    // 🗑️ Elimina account
+    @DeleteMapping("/delete/{email}")
+    public ResponseEntity<?> deleteUser(@PathVariable String email) {
+
+        User user = userRepository.findByEmail(email);
+        if (user == null) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("error", "Utente non trovato"));
+        }
+
+        userRepository.delete(user);
+
+        return ResponseEntity.ok(Map.of("message", "Account eliminato con successo"));
+    }
+
+
 
 }

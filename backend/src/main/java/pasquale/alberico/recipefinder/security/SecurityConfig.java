@@ -36,9 +36,12 @@ public class SecurityConfig {
 
                         // 👇 preferiti protetti da JWT
                         .requestMatchers("/api/favorites/**").authenticated()
+                        // delete user
+                        .requestMatchers("/api/auth/delete/**").permitAll()
 
                         // 👇 tutto il resto richiede login
                         .anyRequest().authenticated()
+
                 );
 
         return http.build();

@@ -33,23 +33,36 @@ public class EmailService {
     }
 
     public void sendVerificationEmail(String email, String token) {
+        System.out.println("📨 Sto inviando email di verifica a: " + email);
+        System.out.println("🔗 Token: " + token);
+
         String link = "http://localhost:5173/verify?token=" + token;
 
         String body = """
-        {
-          "from": "RecipeFinder <onboarding@resend.dev>",
-          "to": "%s",
-          "subject": "Verifica la tua email",
-          "html": "<h2>Verifica il tuo account</h2>
-                   <p>Clicca sul link per attivarlo:</p>
-                   <a href='%s'>Verifica account</a>"
-        }
-        """.formatted(email, link);
+    {
+      "from": "RecipeFinder <onboarding@resend.dev>",
+      "to": "%s",
+      "subject": "Verifica la tua email",
+      "html": "<h2>Verifica il tuo account</h2>
+               <p>Clicca sul link per attivarlo:</p>
+               <a href='%s'>Verifica account</a>"
+    }
+    """.formatted(email, link);
+
+        System.out.println("📤 BODY EMAIL VERIFICA:");
+        System.out.println(body);
+        System.out.println("📨 sendVerificationEmail() chiamato");
+        System.out.println("Email destinatario: " + email);
+        System.out.println("Token: " + token);
+
+
 
         Unirest.post("https://api.resend.com/emails")
                 .header("Authorization", "Bearer " + resendApiKey)
                 .header("Content-Type", "application/json")
                 .body(body)
                 .asJson();
+        System.out.println("📤 Verifica EMAIL Resend response:");
+        System.out.println(response.getBody());
     }
 }
