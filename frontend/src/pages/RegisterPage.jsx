@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
+  const { login } = useAuth(); 
 
   // 🔥 nuovo stato per mostrare BOX verifica codice
   const [awaitingVerify, setAwaitingVerify] = useState(false);
@@ -79,41 +81,44 @@ function RegisterPage() {
   // -----------------------------
   // VERIFICA CODICE OTP
   // -----------------------------
-  const handleVerifyCode = async () => {
-    setError("");
-    setSuccess("");
 
-    const email = localStorage.getItem("pendingEmail");
+const handleVerifyCode = async () => {
+  setError("");
+  setSuccess("");
 
-    if (!email) {
-      setError("Errore interno: email mancante");
+  const email = localStorage.getItem("pendingEmail");
+
+  try {
+    const res = await fetch("http://localhost:8080/api/auth/verify-code", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code: otp }),
+    });
+
+    const data = await res.json();
+    console.log("🟦 Verify response:", data);
+
+    if (!res.ok) {
+      setError(data.error || "Codice non valido");
       return;
     }
 
-    try {
-      const res = await fetch("http://localhost:8080/api/auth/verify-code", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code: otp }),
-      });
+    // 🔥 LOGIN AUTOMATICO
+// data = { message, user, token }
+login(data.user, data.token);
 
-      const data = await res.json();
-      console.log("🟦 Verify-code response:", data);
 
-      if (!res.ok) {
-        setError(data.error || "Codice non valido");
-        return;
-      }
+setSuccess("🎉 Verifica completata! Accesso effettuato...");
 
-      setSuccess(data.message || "Verifica completata!");
+// redirect dopo login
+setTimeout(() => navigate("/profile"), 1500);
 
-      // attendo 2 sec e vado al login
-      setTimeout(() => navigate("/home"), 2000);
-    } catch (err) {
-      console.error(err);
-      setError("Errore di connessione");
-    }
-  };
+  } catch (err) {
+    console.error(err);
+    setError("Errore di connessione");
+  }
+};
+
 
   // -----------------------------
   // RENDER

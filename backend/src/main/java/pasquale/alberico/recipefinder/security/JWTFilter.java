@@ -30,6 +30,9 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        System.out.println("=== JWT DEBUG START ===");
+        System.out.println("Authorization header: " + request.getHeader("Authorization"));
+        System.out.println("=== JWT DEBUG END ===");
 
         String authHeader = request.getHeader("Authorization");
 

@@ -24,19 +24,32 @@ public class JWTTools {
                 .compact();
     }
 
-    public void verifyToken(String accessToken) {
+    public void verifyToken(String token) {
         try {
-            Jwts.parser().verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build().parse(accessToken);
+            Jwts.parser()
+                    .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                    .build()
+                    .parseSignedClaims(token); // ✔ verifica firma + payload
         } catch (Exception ex) {
             throw new UnauthorizedException("Token invalido o scaduto!");
         }
     }
 
-    public Long extractIdFromToken(String accessToken) {
-        return Long.parseLong(Jwts.parser()
-                .verifyWith(Keys.hmacShaKeyFor(secret.getBytes())).build()
-                .parseSignedClaims(accessToken)
-                .getPayload()
-                .getSubject());
+
+    public Long extractIdFromToken(String token) {
+        return Long.parseLong(
+                Jwts.parser()
+                        .verifyWith(Keys.hmacShaKeyFor(secret.getBytes()))
+                        .build()
+                        .parseSignedClaims(token)
+                        .getPayload()
+                        .getSubject()
+        );
     }
+
 }
+//Ora la catena sarà:
+//Chiave JWT valida → token valido
+//verifyToken() corretto → ti fa passare
+//apiFetch invia il token giusto → niente più 403
+//favorites FUNZIONA
