@@ -20,38 +20,53 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class) // 🔥 Inseriamo il filtro JWT
+
+                // 🔥 Inseriamo il filtro JWT PRIMA dell’authentication filter
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .authorizeHttpRequests(auth -> auth
-                        // 👇 ENDPOINT PUBBLICI
+
+                        // -----------------------------
+                        // 🔓 ENDPOINT PUBBLICI
+                        // -----------------------------
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/verify").permitAll()
-                        .requestMatchers("/api/test-email").permitAll()
+                        .requestMatchers("/api/auth/verify-code").permitAll()
 
-                        // 👇 ricette pubbliche
-                        .requestMatchers("/api/recipes/**").permitAll()
-
-                        // 👇 preferiti protetti da JWT
-                        .requestMatchers("/api/favorites/**").authenticated()
-                        // delete user
+                        // endpoint utile solo per testing
                         .requestMatchers("/api/auth/delete/**").permitAll()
 
-                        // 👇 tutto il resto richiede login
-                        .anyRequest().authenticated()
+                        // test email
+                        .requestMatchers("/api/test-email").permitAll()
 
+                        // ricette totalmente pubbliche
+                        .requestMatchers("/api/recipes/**").permitAll()
+
+                        // -----------------------------
+                        // 🔐 ENDPOINT PROTETTI
+                        // -----------------------------
+                        .requestMatchers("/api/favorites/**").authenticated()
+
+                        // -----------------------------
+                        // 🔒 TUTTO IL RESTO RICHIEDE LOGIN
+                        // -----------------------------
+                        .anyRequest().authenticated()
                 );
 
         return http.build();
     }
 
+    // CONFIGURAZIONE CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        configuration.setAllowedMethods(List.of("GET","POST","PUT","DELETE","OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
 

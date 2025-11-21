@@ -7,12 +7,10 @@ import pasquale.alberico.recipefinder.entities.User;
 import pasquale.alberico.recipefinder.enums.Role;
 import pasquale.alberico.recipefinder.repositories.UserRepository;
 import pasquale.alberico.recipefinder.services.EmailService;
-import pasquale.alberico.recipefinder.security.JWTTools;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,107 +19,124 @@ public class AuthController {
 
     private final UserRepository userRepository;
     private final EmailService emailService;
-    private final JWTTools jwtTools;  // ⬅ AGGIUNGERE QUESTO
-
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // ⬅ AGGIUNGIAMO jwtTools AL COSTRUTTORE
-    public AuthController(UserRepository userRepository, EmailService emailService, JWTTools jwtTools) {
+    public AuthController(UserRepository userRepository, EmailService emailService) {
         this.userRepository = userRepository;
         this.emailService = emailService;
-        this.jwtTools = jwtTools;
     }
 
-    // 🧑‍💻 Registrazione con token email
+    // 🧑‍💻 REGISTRAZIONE: crea utente + genera CODICE OTP + invia email
     @PostMapping("/register")
-    public String register(@RequestBody User newUser) {
+    public ResponseEntity<String> register(@RequestBody User newUser) {
+        // se email già usata --> 400
         if (userRepository.findByEmail(newUser.getEmail()) != null) {
-            return "⚠️ Utente già registrato con questa email";
+            return ResponseEntity
+                    .badRequest()
+                    .body("⚠️ Utente già registrato con questa email");
         }
 
+        // hash password
         newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
         newUser.setRole(Role.USER);
-        newUser.setVerificationToken(UUID.randomUUID().toString());
         newUser.setVerified(false);
 
+        // 🔢 genera codice OTP a 6 cifre (es. 123456)
+        int code = 100000 + new Random().nextInt(900000);
+        String verificationCode = String.valueOf(code);
+        newUser.setVerificationCode(verificationCode);
+
+        // salva su DB
         userRepository.save(newUser);
 
+        // email di benvenuto (opzionale)
         emailService.sendWelcomeEmail(newUser.getEmail(), newUser.getUsername());
-        emailService.sendVerificationEmail(newUser.getEmail(), newUser.getVerificationToken());
 
-        return "✅ Registrazione completata! Controlla la tua email per confermare.";
+        // email con CODICE
+        emailService.sendVerificationCode(newUser.getEmail(), verificationCode);
+
+        // risposta testuale (il frontend la legge con res.text())
+        return ResponseEntity.ok(
+                "✅ Registrazione completata! Ti abbiamo inviato un codice di verifica via email."
+        );
     }
 
-    // ✉️ Verifica email
-    @GetMapping("/verify")
-    public String verifyUser(@RequestParam String token) {
+    // ✉️ VERIFICA CODICE: il frontend manda { email, code }
+    @PostMapping("/verify-code")
+    public ResponseEntity<Map<String, String>> verifyCode(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String code = payload.get("code");
 
-        Optional<User> optionalUser = userRepository.findAll()
-                .stream()
-                .filter(u -> token.equals(u.getVerificationToken()))
-                .findFirst();
+        Map<String, String> resp = new HashMap<>();
 
-        if (optionalUser.isEmpty()) {
-            return "❌ Token non valido o scaduto.";
+        if (email == null || code == null) {
+            resp.put("error", "Email e codice sono obbligatori");
+            return ResponseEntity.badRequest().body(resp);
         }
-
-        User user = optionalUser.get();
-        user.setVerified(true);
-        user.setVerificationToken(null);
-        userRepository.save(user);
-
-        return "🎉 Email verificata con successo! Ora puoi accedere.";
-    }
-
-    // 🔑 Login solo se verificato
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody User loginRequest) {
-
-        User user = userRepository.findByEmail(loginRequest.getEmail());
-
-        if (user == null) {
-            return ResponseEntity.status(400)
-                    .body(Map.of("error", "Utente non trovato"));
-        }
-
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(400)
-                    .body(Map.of("error", "Password errata"));
-        }
-
-        if (!user.isVerified()) {
-            return ResponseEntity.status(400)
-                    .body(Map.of("error", "Account non verificato"));
-        }
-
-        // 🔥 Genera token JWT
-        String token = jwtTools.createToken(user);
-
-        // 🔐 Risposta JSON controllata
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("id", user.getId());
-        responseBody.put("email", user.getEmail());
-        responseBody.put("role", user.getRole());
-        responseBody.put("name", user.getUsername());
-        responseBody.put("token", token);
-
-        return ResponseEntity.ok(responseBody);
-    }
-    // 🗑️ Elimina account
-    @DeleteMapping("/delete/{email}")
-    public ResponseEntity<?> deleteUser(@PathVariable String email) {
 
         User user = userRepository.findByEmail(email);
         if (user == null) {
-            return ResponseEntity.status(404)
-                    .body(Map.of("error", "Utente non trovato"));
+            resp.put("error", "Utente non trovato");
+            return ResponseEntity.badRequest().body(resp);
         }
 
-        userRepository.delete(user);
+        if (user.isVerified()) {
+            resp.put("message", "Account già verificato, puoi effettuare il login.");
+            return ResponseEntity.ok(resp);
+        }
 
-        return ResponseEntity.ok(Map.of("message", "Account eliminato con successo"));
+        if (!code.equals(user.getVerificationCode())) {
+            resp.put("error", "Codice di verifica non valido");
+            return ResponseEntity.badRequest().body(resp);
+        }
+
+        // ✅ codice corretto → attivo l'account
+        user.setVerified(true);
+        user.setVerificationCode(null); // non serve più
+        userRepository.save(user);
+
+        resp.put("message", "🎉 Email verificata con successo! Ora puoi accedere.");
+        return ResponseEntity.ok(resp);
     }
 
+    // 🔑 LOGIN: consento solo se verified == true
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody User loginRequest) {
+        Map<String, String> resp = new HashMap<>();
 
+        // cerco utente per email
+        User user = userRepository.findByEmail(loginRequest.getEmail());
+        if (user == null) {
+            resp.put("error", "Utente non trovato");
+            return ResponseEntity.badRequest().body(resp);
+        }
+
+        // controllo password
+        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+            resp.put("error", "Password errata");
+            return ResponseEntity.badRequest().body(resp);
+        }
+
+        // blocco se non verificato
+        if (!user.isVerified()) {
+            resp.put("error", "Account non verificato. Controlla la tua email per il codice.");
+            return ResponseEntity.badRequest().body(resp);
+        }
+
+        // mai mandare password al frontend
+        user.setPassword(null);
+
+        // ritorno direttamente l'oggetto User (il tuo frontend fa login(data))
+        return ResponseEntity.ok(user);
+    }
+    // 🧽 DELETE UTENTE (SOLO PER TEST)
+    @DeleteMapping("/delete/{email}")
+    public ResponseEntity<String> deleteUser(@PathVariable String email) {
+        User u = userRepository.findByEmail(email);
+        if (u == null) return ResponseEntity.badRequest().body("Utente non trovato");
+
+        userRepository.delete(u);
+        return ResponseEntity.ok("Utente eliminato con successo");
+    }
 
 }
