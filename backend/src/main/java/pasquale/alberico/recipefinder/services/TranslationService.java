@@ -12,6 +12,9 @@ public class TranslationService {
 
     static {
         ingredientMap.put("uova", "eggs");
+        ingredientMap.put("manzo", "beef");
+        ingredientMap.put("panna", "cream");
+        ingredientMap.put("cioccolato", "chocolate");
         ingredientMap.put("farina", "flour");
         ingredientMap.put("latte", "milk");
         ingredientMap.put("burro", "butter");

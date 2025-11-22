@@ -26,37 +26,55 @@ function RecipeDetail() {
   useEffect(() => {
     const fetchRecipe = async () => {
       try {
-        const data = await apiFetch(`/recipes/${id}`);
+       const response = await apiFetch(`/recipes/${id}`);
+const data = response.recipe; 
 
-        // 🔁 Traduzione automatica
-        const translatedTitle = needsTranslation(data.title)
-          ? await translateText(data.title)
-          : data.title;
+console.log("Dati ricetta:", data);
 
-        const translatedInstructions = needsTranslation(data.instructions)
-          ? await translateText(data.instructions)
-          : data.instructions;
+// Traduzione titolo
+const translatedTitle = needsTranslation(data.title)
+  ? await translateText(data.title)
+  : data.title;
 
-        const translatedIngredients = await Promise.all(
-          (data.extendedIngredients || []).map(async (ing) => ({
-            ...ing,
-            original: needsTranslation(ing.original)
-              ? await translateText(ing.original)
-              : ing.original,
-          }))
-        );
+// Traduzione istruzioni
+const translatedInstructions = needsTranslation(data.instructions)
+  ? await translateText(data.instructions)
+  : data.instructions;
 
-        setRecipe({
-          ...data,
-          title: translatedTitle,
-          instructions: translatedInstructions,
-          extendedIngredients: translatedIngredients,
-        });
+// Ingredienti: nel backend sono una STRINGA
+const rawIngredients = data.ingredients || "";
+const ingredientList = rawIngredients.split(",").map((i) => i.trim());
+
+// eventuale traduzione ingredienti
+// Costruisci gli ingredienti traducendoli PRIMA di settare lo state
+const translatedIngredients = await Promise.all(
+  ingredientList.map(async (ing) => {
+    const t = needsTranslation(ing)
+      ? await translateText(ing)
+      : ing;
+    return { original: t };
+  })
+);
+
+// Ora puoi settare la ricetta SENZA await dentro setRecipe
+setRecipe({
+  id: data.id,
+  title: translatedTitle,
+  image: data.image,
+  extendedIngredients: translatedIngredients,
+  instructions: translatedInstructions,
+  readyInMinutes: data.readyInMinutes || 0,
+  servings: data.servings || 1,
+
+});
+
+
+
 
         // 🔹 Se loggato, controlla se è tra i preferiti
         if (user) {
-          const favorites = await fetch(`http://localhost:8080/api/favorites/${user.id}`);
-          const favList = await favorites.json();
+          const favList = await apiFetch(`/favorites/${user.id}`);
+
           const found = favList.some((fav) => fav.id === Number(id));
           setIsFavorite(found);
           console.log("💾 Preferiti caricati:", favList);
@@ -74,23 +92,22 @@ function RecipeDetail() {
 
   // ❤️ Aggiunge o rimuove dai preferiti
   const toggleFavorite = async () => {
-    if (!user) {
-      alert("Effettua il login per salvare nei preferiti 🔐");
-      return;
-    }
+  if (!user) {
+    alert("Effettua il login per salvare nei preferiti 🔐");
+    return;
+  }
 
-    const method = isFavorite ? "DELETE" : "POST";
-    const url = `http://localhost:8080/api/favorites/${user.id}/${id}`;
+  const method = isFavorite ? "DELETE" : "POST";
 
-    try {
-      const res = await fetch(url, { method });
-      const msg = await res.text();
-      console.log(msg);
-      setIsFavorite(!isFavorite);
-    } catch (err) {
-      console.error("Errore nel salvataggio preferito:", err);
-    }
-  };
+  try {
+    await apiFetch(`/favorites/${user.id}/${id}`, { method });
+
+    setIsFavorite(!isFavorite);
+  } catch (err) {
+    console.error("Errore nel salvataggio preferito:", err);
+  }
+};
+
 
   if (loading)
     return (
@@ -123,7 +140,7 @@ function RecipeDetail() {
       <Navbar />
       <div className="container my-5 d-flex justify-content-center">
         <div className="card shadow" style={{ maxWidth: "800px" }}>
-          <div className="card-body">
+          <div className="card-body mt-5">
             <h2 className="card-title text-center mb-3">{recipe.title}</h2>
 
             <img

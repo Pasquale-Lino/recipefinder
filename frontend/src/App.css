@@ -84,3 +84,97 @@ h4 {
   max-width: 1100px;
   min-height: 100vh;      /* altezza piena per coerenza */
 }
+
+
+/* ============================
+   CAROSELLO RICETTE IN EVIDENZA
+   ============================ */
+
+.featured-carousel {
+  color: #fff;
+}
+
+.featured-carousel .recipe-card {
+  border-radius: 1.5rem;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(6px);
+}
+
+.featured-carousel .recipe-card img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.featured-carousel .recipe-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.text-light-50 {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.carousel-arrow {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 1.4rem;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.carousel-arrow:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.favorite-heart {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  font-size: 1rem;
+}
+
+/* pallini sotto il carosello */
+.featured-carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.featured-carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s ease;
+}
+
+.featured-carousel-dot.active {
+  width: 18px;
+  background: #ffc107;
+}
+
+/* su mobile niente frecce (ci pensa autoplay) */
+@media (max-width: 767.98px) {
+  .featured-carousel-arrows {
+    display: none !important;
+  }
+
+  .featured-carousel .recipe-card img {
+    height: 260px;
+  }
+}

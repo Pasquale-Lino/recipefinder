@@ -10,14 +10,33 @@ function Navbar() {
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
+  e.preventDefault();
+
+  if (!searchTerm.trim()) return;
+
+  // Se NON sei in home → torna in home
+  if (window.location.pathname !== "/home") {
+    navigate("/home");
+
+    // aspetta un attimo che la pagina carichi il blocco risultati
+    setTimeout(() => {
       const resultsSection = document.getElementById("results-section");
       if (resultsSection) {
         resultsSection.scrollIntoView({ behavior: "smooth" });
       }
-    }
-  };
+    }, 300);
+
+    return;
+  }
+
+  // Se sei già in home → scrolla normalmente
+  const resultsSection = document.getElementById("results-section");
+  if (resultsSection) {
+    resultsSection.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+
 
   return (
     <>
@@ -30,6 +49,12 @@ function Navbar() {
           >
             🍳 Recipe Finder
           </span>
+          <button
+            className="btn btn-outline-light m-1"
+            onClick={() => navigate("/home")}
+          >
+            🏠 Home
+          </button>
 
           <form className="d-flex flex-grow-1 me-3" onSubmit={handleSearch}>
             <input
@@ -40,7 +65,7 @@ function Navbar() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <button className="btn btn-outline-warning" type="submit">
-              Cerca
+             Cerca
             </button>
           </form>
 

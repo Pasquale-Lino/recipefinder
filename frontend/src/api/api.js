@@ -4,7 +4,7 @@ const API_BASE_URL = 'http://localhost:8080/api';
 export async function apiFetch(endpoint, options = {}) {
   // 🔐 Leggo il token salvato dal login/verifica
   const token = localStorage.getItem('token');
-  console.log('🔑 apiFetch – token letto da localStorage:', token);
+  //console.log('🔑 apiFetch – token letto da localStorage:', token);
 
   // 🔧 Costruisco gli header unendo quelli passati + Authorization
   const headers = {
@@ -34,7 +34,7 @@ export async function apiFetch(endpoint, options = {}) {
       return bodyText;
     }
   }
-  console.log('🔑 apiFetch – token letto da localStorage:', token);
+  //console.log('🔑 apiFetch – token letto da localStorage:', token);
 
   return bodyText;
 }
