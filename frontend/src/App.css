@@ -178,3 +178,6 @@ h4 {
     height: 260px;
   }
 }
+.form {
+    display: flex;
+flex-wrap: nowrap;}

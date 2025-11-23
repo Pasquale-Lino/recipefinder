@@ -23,14 +23,13 @@ public class AuthController {
     private final JWTTools jwtTools;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    // 👉 Costruttore completo: Spring inietta AUTOMATICAMENTE le dipendenze
     public AuthController(UserRepository userRepository, EmailService emailService, JWTTools jwtTools) {
         this.userRepository = userRepository;
         this.emailService = emailService;
         this.jwtTools = jwtTools;
     }
 
-    // 🧑‍💻 REGISTRAZIONE
+    // REGISTRAZIONE
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User newUser) {
         if (userRepository.findByEmail(newUser.getEmail()) != null) {
@@ -52,7 +51,7 @@ public class AuthController {
         return ResponseEntity.ok("✅ Registrazione completata! Ti abbiamo inviato un codice di verifica via email.");
     }
 
-    // ✉️ VERIFICA CODICE OTP
+    // VERIFICA CODICE OTP
     @PostMapping("/verify-code")
     public ResponseEntity<Map<String, Object>> verifyCode(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
@@ -85,8 +84,7 @@ public class AuthController {
         user.setVerificationCode(null);
         userRepository.save(user);
 
-        // 🔥 CREA TOKEN JWT ORA FUNZIONA
-        String token = jwtTools.createToken(user);
+        String token = jwtTools.generateToken(user);
 
         user.setPassword(null);
 
@@ -97,10 +95,10 @@ public class AuthController {
         return ResponseEntity.ok(resp);
     }
 
-    // 🔑 LOGIN
+    // LOGIN
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
-        Map<String, String> resp = new HashMap<>();
+        Map<String, Object> resp = new HashMap<>();
 
         User user = userRepository.findByEmail(loginRequest.getEmail());
         if (user == null) {
@@ -118,10 +116,16 @@ public class AuthController {
             return ResponseEntity.badRequest().body(resp);
         }
 
+        String token = jwtTools.generateToken(user);
+
         user.setPassword(null);
 
-        return ResponseEntity.ok(user);
+        resp.put("user", user);
+        resp.put("token", token);
+
+        return ResponseEntity.ok(resp);
     }
+
 
     @DeleteMapping("/delete/{email}")
     public ResponseEntity<String> deleteUser(@PathVariable String email) {

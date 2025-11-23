@@ -1,6 +1,6 @@
 // src/context/AuthProvider.jsx
 import { useState, useEffect } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./AuthContext"; // importa solo il contesto
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -22,7 +22,6 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // 🔥 LOGIN CORRETTO
   const login = (userData, token) => {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));

@@ -3,6 +3,7 @@ package pasquale.alberico.recipefinder.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,43 +26,37 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> {})
 
-                // 🔥 Inseriamo il filtro JWT PRIMA dell’authentication filter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // -----------------------------
-                        // 🔓 ENDPOINT PUBBLICI
-                        // -----------------------------
+                        // ENDPOINT PUBBLICI
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/verify").permitAll()
                         .requestMatchers("/api/auth/verify-code").permitAll()
 
-                        // endpoint utile solo per testing
                         .requestMatchers("/api/auth/delete/**").permitAll()
-
-                        // test email
                         .requestMatchers("/api/test-email").permitAll()
 
-                        // ricette totalmente pubbliche
-                        .requestMatchers("/api/recipes/**").permitAll()
+                        // tutte le GET su ricette sono pubbliche
+                        .requestMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()
 
-                        // -----------------------------
-                        // 🔐 ENDPOINT PROTETTI
-                        // -----------------------------
+                        // creazione / modifica / cancellazione ricette → solo ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/recipes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/recipes/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/recipes/**").hasRole("ADMIN")
+
+                        // altri endpoint protetti
                         .requestMatchers("/api/favorites/**").authenticated()
 
-                        // -----------------------------
-                        // 🔒 TUTTO IL RESTO RICHIEDE LOGIN
-                        // -----------------------------
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
 
-    // CONFIGURAZIONE CORS
+    // CORS
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

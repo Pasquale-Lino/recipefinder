@@ -41,22 +41,22 @@ function Navbar() {
   return (
     <>
       <nav className="navbar navbar-dark bg-dark fixed-top shadow-sm">
-        <div className="container-fluid px-4 d-flex align-items-center">
+        <div className="container-fluid px-1 d-flex align-items-center">
           <span
-            className="navbar-brand fw-bold text-warning me-3"
+            className="navbar-brand fw-bold text-warning me-2"
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
             🍳 Recipe Finder
           </span>
-          <button
+          {/* <button
             className="btn btn-outline-light m-1"
             onClick={() => navigate("/home")}
           >
             🏠 Home
-          </button>
+          </button> */}
 
-          <form className="d-flex flex-grow-1 me-3" onSubmit={handleSearch}>
+          <form className="form d-flex flex-grow-1 me-2" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
               type="search"

@@ -1,3 +1,4 @@
+// src/main/java/pasquale/alberico/recipefinder/config/DataLoader.java
 package pasquale.alberico.recipefinder.config;
 
 import jakarta.annotation.PostConstruct;
@@ -19,16 +20,31 @@ public class DataLoader {
 
     @PostConstruct
     public void init() {
+
+        // 🟥 CREA ADMIN VERIFICATO
         if (userRepository.findByEmail("admin@demo.it") == null) {
-            User admin = new User("Admin", "admin@demo.it",
-                    passwordEncoder.encode("admin123"), Role.ADMIN);
+            User admin = new User(
+                    "Admin",
+                    "admin@demo.it",
+                    passwordEncoder.encode("admin123"),
+                    Role.ADMIN
+            );
+            admin.setVerified(true);            // 👉 ADMIN SEMPRE VERIFICATO
+            admin.setVerificationCode(null);    // 👉 Nessun codice OTP
+
             userRepository.save(admin);
-            System.out.println("👑 Admin creato: admin@demo.it / admin123");
+            System.out.println("👑 Admin creato: admin@demo.it / admin123 (VERIFICATO)");
         }
 
+        // 🟦 CREA USER NON VERIFICATO
         if (userRepository.findByEmail("user@demo.it") == null) {
-            User user = new User("Utente Demo", "user@demo.it",
-                    passwordEncoder.encode("user123"), Role.USER);
+            User user = new User(
+                    "Utente Demo",
+                    "user@demo.it",
+                    passwordEncoder.encode("user123"),
+                    Role.USER
+            );
+            user.setVerified(false);
             userRepository.save(user);
             System.out.println("👤 User creato: user@demo.it / user123");
         }
