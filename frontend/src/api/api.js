@@ -12,6 +12,11 @@ export async function apiFetch(endpoint, options = {}) {
     ...(options.headers || {}),
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
+  console.log('📡 apiFetch →', {
+    endpoint,
+    headers,
+    token,
+  });
 
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,

@@ -2,25 +2,24 @@ import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { apiFetch } from "../api/api";
+import bgImage from "../assets/img/disposizione-degli-alimenti-conservati-sugli-scaffali.jpg";
 
 function ProfilePage() {
   const { user, logout } = useAuth();
   const [myRecipes, setMyRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  // =============================
+  // ========================================================
   //   CARICA DATI PROFILO
-  // =============================
+  // ========================================================
   useEffect(() => {
     if (!user) return;
 
     const loadData = async () => {
       try {
-        // ricette create dall'utente loggato
         const recipes = await apiFetch("/recipes/me");
         setMyRecipes(recipes);
 
-        // preferiti
         if (user.id) {
           const fav = await apiFetch(`/favorites/${user.id}`);
           setFavorites(fav);
@@ -33,9 +32,9 @@ function ProfilePage() {
     loadData();
   }, [user]);
 
-  // =============================
+  // ========================================================
   //   ELIMINA RICETTA
-  // =============================
+  // ========================================================
   const deleteRecipe = async (id) => {
     if (!window.confirm("Vuoi davvero eliminare questa ricetta?")) return;
 
@@ -48,9 +47,48 @@ function ProfilePage() {
     }
   };
 
-  // =============================
+  // ========================================================
+  //   TOGGLE FEATURED
+  // ========================================================
+  const toggleFeatured = async (id) => {
+  try {
+    const updated = await apiFetch(`/recipes/admin/${id}/featured`, {
+      method: "PUT"
+    });
+
+    // aggiorna la lista locale
+    setMyRecipes(prev =>
+      prev.map(r => (r.id === id ? updated : r))
+    );
+
+  } catch (err) {
+    console.error("Errore toggle featured:", err);
+  }
+};
+
+
+  // ========================================================
+  //   TOGGLE PUBLIC/PRIVATE
+  // ========================================================
+  const togglePublic = async (id) => {
+  try {
+    const updated = await apiFetch(`/recipes/admin/${id}/public`, {
+      method: "PUT"
+    });
+
+    setMyRecipes(prev =>
+      prev.map(r => (r.id === id ? updated : r))
+    );
+
+  } catch (err) {
+    console.error("Errore toggle public:", err);
+  }
+};
+
+
+  // ========================================================
   //   SE NON LOGGATO
-  // =============================
+  // ========================================================
   if (!user) {
     return (
       <div className="text-center py-5">
@@ -67,11 +105,23 @@ function ProfilePage() {
   }
 
   return (
-    <div className="customProfile">
+    <div
+      className="customProfile"
+      style={{
+  backgroundImage: `url(${bgImage})`,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  backgroundAttachment: "fixed",
+  minHeight: "100vh",
+  paddingTop: "40px",
+  paddingBottom: "40px"
+}}
+
+    >
       <div className="container py-5">
         {/* HEADER PROFILO */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h2>👋 Benvenuto, {user.username || user.email}</h2>
+          <h2 className="text-outline">👋 Benvenuto, {user.username || user.email}</h2>
           <button className="btn btn-outline-success" onClick={logout}>
             🚪 Esci
           </button>
@@ -81,7 +131,7 @@ function ProfilePage() {
         {/*    LE MIE RICETTE      */}
         {/* ======================= */}
         <div className="mb-5">
-          <h4>📒 Le mie ricette</h4>
+          <h4 className="text-outline">📒 Le mie ricette</h4>
 
           <div className="row g-4 mt-3">
             {myRecipes.length === 0 ? (
@@ -106,21 +156,44 @@ function ProfilePage() {
                     <div className="card-body d-flex flex-column">
                       <h5 className="card-title">{r.title}</h5>
 
-                      <div className="mt-3 d-flex justify-content-between">
-                        <Link
-                          to={`/recipe/${r.id}`}
-                          className="btn btn-primary btn-sm"
-                        >
-                          👁️ Vedi
-                        </Link>
+                      <div className="mt-3 d-flex flex-wrap gap-2 justify-content-between">
 
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => deleteRecipe(r.id)}
-                        >
-                          🗑️ Elimina
-                        </button>
-                      </div>
+  <Link
+    to={`/recipe/${r.id}`}
+    className="btn btn-primary btn-sm"
+  >
+    👁️ Vedi
+  </Link>
+
+  <Link
+    to={`/edit-recipe/${r.id}`}
+    className="btn btn-warning btn-sm"
+  >
+    ✏️ Modifica
+  </Link>
+
+  <button
+    className={`btn btn-sm ${r.featured ? "btn-warning" : "btn-outline-warning"}`}
+    onClick={() => toggleFeatured(r.id)}
+  >
+    ⭐ {r.featured ? "In Homepage" : "Featured"}
+  </button>
+
+  <button
+    className={`btn btn-sm ${r.publicRecipe ? "btn-success" : "btn-outline-secondary"}`}
+    onClick={() => togglePublic(r.id)}
+  >
+    🌍 {r.publicRecipe ? "Pubblica" : "Privata"}
+  </button>
+
+  <button
+    className="btn btn-danger btn-sm"
+    onClick={() => deleteRecipe(r.id)}
+  >
+    🗑️ Elimina
+  </button>
+</div>
+
                     </div>
                   </div>
                 </div>
@@ -128,7 +201,7 @@ function ProfilePage() {
             )}
           </div>
 
-          <Link to="/create-recipe" className="btn btn-success mt-3">
+          <Link to="/create-recipe" className="btn btn-success mt-3 text-outline">
             ➕ Crea una nuova ricetta
           </Link>
         </div>
@@ -136,11 +209,11 @@ function ProfilePage() {
         {/* ======================= */}
         {/*     PREFERITI           */}
         {/* ======================= */}
-        <div className="mb-5">
+        <div className="mb-5 text-outline">
           <h4>❤️ Ricette preferite</h4>
 
           {favorites.length === 0 ? (
-            <p className="text-muted">
+            <p className="text-muted text-outline">
               Non hai ancora salvato nessuna ricetta.
             </p>
           ) : (
@@ -148,12 +221,12 @@ function ProfilePage() {
               {favorites.map((r) => (
                 <li
                   key={r.id}
-                  className="list-group-item d-flex justify-content-between align-items-center"
+                  className="list-group-item d-flex justify-content-between align-items-center text-outline"
                 >
                   {r.title}
                   <Link
                     to={`/recipe/${r.id}`}
-                    className="btn btn-outline-primary btn-sm"
+                    className="btn btn-outline-primary btn-sm text-outline"
                   >
                     Vedi
                   </Link>
@@ -167,9 +240,9 @@ function ProfilePage() {
         {/*     ADMIN PANEL         */}
         {/* ======================= */}
         {user.role === "ADMIN" && (
-          <div className="border-top pt-4">
+          <div className="border-top pt-4 text-outline">
             <h4>👑 Pannello Admin</h4>
-            <p className="text-muted">Funzionalità di moderazione in arrivo.</p>
+            <p className=" text-outline text-muted">Funzionalità di moderazione in arrivo.</p>
           </div>
         )}
       </div>

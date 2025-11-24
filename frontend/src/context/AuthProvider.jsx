@@ -1,8 +1,7 @@
-// src/context/AuthProvider.jsx
 import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 
-export default function AuthProvider({ children }) {
+function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,18 +37,11 @@ export default function AuthProvider({ children }) {
     setToken(null);
   };
 
-  if (loading) {
-    return (
-      <div className="text-center mt-5">
-        <div className="spinner-border text-success" role="status" />
-        <p>Caricamento sessione...</p>
-      </div>
-    );
-  }
-
   return (
     <AuthContext.Provider value={{ user, token, login, logout }}>
-      {children}
+      {!loading && children}
     </AuthContext.Provider>
   );
 }
+
+export default AuthProvider;

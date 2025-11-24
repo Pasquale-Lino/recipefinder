@@ -14,7 +14,7 @@ import AuthProvider from "./context/AuthProvider.jsx";
 import { SearchProvider } from "./context/SearchContext.jsx";
 import "./index.css";
 import VerifyPage from "./pages/VerifyPage.jsx"; 
-
+import EditRecipePage from "./pages/EditRecipePage.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -35,6 +35,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               {/* 🔐 Pagine protette, accessibili solo da utenti loggati */}
               <Route path="/create-recipe" element={
                 <PrivateRoute><CreateRecipePage /></PrivateRoute>}/>
+                <Route path="/edit-recipe/:id" element={<EditRecipePage />} />
+
               {/* 📝 Registrazione aperta a tutti */}
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify" element={<VerifyPage />} />

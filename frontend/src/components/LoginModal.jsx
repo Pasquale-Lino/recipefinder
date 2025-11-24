@@ -1,4 +1,4 @@
-// LoginModal.jsx CORRETTO
+// src/components/LoginModal.jsx
 import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import * as bootstrap from "bootstrap/dist/js/bootstrap.bundle.min.js";
@@ -21,39 +21,27 @@ function LoginModal() {
         body: JSON.stringify({ email, password }),
       });
 
-      console.log("LOGIN RESPONSE:", res);
-
-      // ⚡ SALVO IL TOKEN E L'UTENTE
+      // 🔥 Salva tutto nel context
       login(res.user, res.token);
 
-      // Chiudo la modale
+      // Chiudi modale
       const modal = bootstrap.Modal.getInstance(
         document.getElementById("loginModal")
       );
       modal.hide();
     } catch (err) {
-      console.error(err);
       setError(err.message || "Errore durante il login");
     }
   };
 
   return (
-    <div
-      className="modal fade"
-      id="loginModal"
-      tabIndex="-1"
-      aria-hidden="true"
-    >
+    <div className="modal fade" id="loginModal" tabIndex="-1" aria-hidden="true">
       <div className="modal-dialog">
         <div className="modal-content">
           <form onSubmit={handleLogin}>
             <div className="modal-header">
               <h5 className="modal-title">Login</h5>
-              <button
-                type="button"
-                className="btn-close"
-                data-bs-dismiss="modal"
-              ></button>
+              <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
             <div className="modal-body">

@@ -33,19 +33,19 @@ public class RecipeController {
         return recipeService.getRecipesByIngredients(ingredients);
     }
 
-    // 📄 Dettaglio ricetta (Spoonacular o DB)
+    // 📄 Dettaglio (Spoonacular o DB)
     @GetMapping("/{id}")
     public Map<String, Object> getRecipeDetails(@PathVariable long id) {
         return recipeService.getRecipeDetails(id);
     }
 
-    // Tutte le ricette (solo DB)
+    // Tutte dal DB
     @GetMapping("/all")
     public List<Recipe> getAllRecipes() {
         return recipeService.getAllRecipes();
     }
 
-    // Solo ricette pubbliche
+    // Solo pubbliche
     @GetMapping("/public")
     public List<Recipe> getPublicRecipes() {
         return recipeService.getPublicRecipes();
@@ -54,14 +54,11 @@ public class RecipeController {
     // Ricette dell’utente loggato
     @GetMapping("/me")
     public List<Recipe> getMyRecipes(Authentication authentication) {
-        System.out.println("🔴 BACKEND AUTHENTICATION: " + authentication);
         User currentUser = (User) authentication.getPrincipal();
-        System.out.println("🟢 BACKEND UTENTE LOGGATO ID=" + currentUser.getId() + " ruolo=" + currentUser.getRole());
         return recipeService.getRecipesByUser(currentUser);
     }
 
-
-    // Featured per carosello
+    // Featured per homepage
     @GetMapping("/featured")
     public List<Recipe> getFeaturedRecipes() {
         return recipeRepository.findByFeaturedTrue();
@@ -71,7 +68,7 @@ public class RecipeController {
     //        ADMIN ONLY
     // ============================
 
-    // ➕ Crea ricetta personalizzata (con immagine opzionale)
+    // ➕ Crea ricetta
     @PostMapping("/create")
     public Recipe createRecipe(
             @RequestParam String title,
@@ -83,22 +80,29 @@ public class RecipeController {
     ) throws IOException {
 
         User user = (User) auth.getPrincipal();
-
-        if (user.getRole() != Role.ADMIN) {
+        if (user.getRole() != Role.ADMIN)
             throw new UnauthorizedException("Solo admin può creare ricette");
-        }
 
-        return recipeService.createRecipe(title, ingredients, instructions,readyInMinutes, image, user);
+        return recipeService.createRecipe(title, ingredients, instructions, readyInMinutes, image, user);
     }
 
-    // 👑 Admin: tutte le ricette
-    @GetMapping("/admin/all")
-    public List<Recipe> adminGetAll(Authentication auth) {
-        User u = (User) auth.getPrincipal();
-        if (u.getRole() != Role.ADMIN)
-            throw new UnauthorizedException("Solo admin");
+    // ✏️ UPDATE ricetta
+    @PutMapping("/admin/{id}")
+    public Recipe updateRecipe(
+            @PathVariable long id,
+            @RequestParam String title,
+            @RequestParam String ingredients,
+            @RequestParam String instructions,
+            @RequestParam Integer readyInMinutes,
+            @RequestParam(required = false) MultipartFile image,
+            Authentication auth
+    ) throws IOException {
 
-        return recipeRepository.findAll();
+        User user = (User) auth.getPrincipal();
+        if (user.getRole() != Role.ADMIN)
+            throw new UnauthorizedException("Solo admin può modificare ricette");
+
+        return recipeService.updateRecipe(id, title, ingredients, instructions, readyInMinutes, image);
     }
 
     // ⭐ Toggle featured

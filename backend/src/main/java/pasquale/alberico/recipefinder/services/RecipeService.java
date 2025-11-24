@@ -129,8 +129,8 @@ public class RecipeService {
     }
 
     // ========================================
-    // 3) Creazione ricetta MANUALE (admin)
-    // ========================================
+// 3) Creazione ricetta MANUALE (admin)
+// ========================================
     public Recipe createRecipe(
             String title,
             String ingredients,
@@ -152,7 +152,7 @@ public class RecipeService {
 
         r.setUser(user);
         r.setPublicRecipe(true);   // di default pubblica
-        r.setFeatured(false);      // di default non in carosello
+        r.setFeatured(false);      // non in homepage
 
         if (image != null && !image.isEmpty()) {
             String url = imageUploadService.uploadImage(image);
@@ -163,8 +163,36 @@ public class RecipeService {
     }
 
     // ========================================
-    // Metodi aggiuntivi per homepage / profilo
+// 4) UPDATE ricetta (admin)
+// ========================================
+    public Recipe updateRecipe(
+            long id,
+            String title,
+            String ingredients,
+            String instructions,
+            Integer readyInMinutes,
+            MultipartFile image
+    ) throws IOException {
+
+        Recipe r = recipeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Ricetta non trovata"));
+
+        r.setTitle(title);
+        r.setIngredients(ingredients);
+        r.setInstructions(instructions);
+        r.setReadyInMinutes(readyInMinutes);
+
+        if (image != null && !image.isEmpty()) {
+            String url = imageUploadService.uploadImage(image);
+            r.setImage(url);
+        }
+
+        return recipeRepository.save(r);
+    }
+
     // ========================================
+// 5) Metodi per profilo/homepage
+// ========================================
     public List<Recipe> getAllRecipes() {
         return recipeRepository.findAll();
     }
@@ -174,10 +202,7 @@ public class RecipeService {
     }
 
     public List<Recipe> getRecipesByUser(User user) {
-        System.out.println("🔍 Cerco ricette per userId=" + user.getId());
         List<Recipe> list = recipeRepository.findByUser(user);
-        System.out.println("📦 Ricette trovate: " + list.size());
         return list;
     }
-
 }

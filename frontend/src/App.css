@@ -196,3 +196,11 @@ flex-wrap: nowrap;}
   height: 200px;
   object-fit: cover;
 }
+.text-outline {
+  color: white !important;
+  text-shadow:
+    0px 0px 2px black,
+     0px -1px 2px black,
+    0px  1px 2px black,
+     0px  1px 2px black
+}

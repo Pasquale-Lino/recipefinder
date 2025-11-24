@@ -206,58 +206,100 @@ const ingredientCategories = {
   return (
     <div className="container py-5">
 
-      {/* 🎠 CAROSELLO RICETTE IN EVIDENZA */}
-      <div id="featuredCarousel" className="carousel slide mb-5 shadow" data-bs-ride="carousel">
-        <div className="carousel-inner">
-
-          {featured.length === 0 ? (
-            <div className="carousel-item active text-center p-5">
-              <h4>Nessuna ricetta in evidenza</h4>
-            </div>
-          ) : (
-            featured.map((recipe, index) => (
-              <div key={recipe.id} className={`carousel-item ${index === 0 ? "active" : ""}`}>
-                <Link to={`/recipe/${recipe.id}`}>
-                  <img
-                    src={recipe.image || "/fallback.jpg"}
-                    className="d-block w-100"
-                    alt={recipe.title}
-                    style={{
-                      height: "380px",
-                      objectFit: "cover",
-                      borderRadius: "10px",
-                    }}
-                  />
-
-                  <div
-                    className="carousel-caption d-none d-md-block"
-                    style={{
-                      background: "rgba(0,0,0,0.55)",
-                      borderRadius: "10px",
-                      padding: "10px 20px",
-                    }}
-                  >
-                    <h5 className="fw-bold">{recipe.title}</h5>
-                    <p>⏱ {recipe.readyInMinutes || "--"} min — 🍽 {recipe.servings || "--"} porzioni</p>
-                  </div>
-                </Link>
-              </div>
-            ))
-          )}
-
-        </div>
-
-        <button className="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
-          <span className="carousel-control-prev-icon"></span>
-        </button>
-        <button className="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
-          <span className="carousel-control-next-icon"></span>
-        </button>
+    {/* 🎠 CAROSELLO SMARTPHONE – 1 IMMAGINE PER SLIDE */}
+<div id="featuredCarouselMobile" className="carousel slide mb-5 shadow d-md-none" data-bs-ride="carousel">
+  <div className="carousel-inner">
+    {featured.map((recipe, i) => (
+      <div key={"m" + i} className={`carousel-item ${i === 0 ? "active" : ""}`}>
+        <Link to={`/recipe/${recipe.id}`}>
+          <img
+            src={recipe.image}
+            className="d-block w-100 rounded"
+            style={{ height: "380px", objectFit: "cover" }}
+          />
+        </Link>
       </div>
+    ))}
+  </div>
+
+  <button className="carousel-control-prev" type="button" data-bs-target="#featuredCarouselMobile" data-bs-slide="prev">
+    <span className="carousel-control-prev-icon" />
+  </button>
+  <button className="carousel-control-next" type="button" data-bs-target="#featuredCarouselMobile" data-bs-slide="next">
+    <span className="carousel-control-next-icon" />
+  </button>
+</div>
+
+
+{/* 🎠 CAROSELLO DESKTOP – 1 GRANDE + 2 PICCOLE */}
+<div id="featuredCarouselDesktop" className="carousel slide mb-5 shadow d-none d-md-block" data-bs-ride="carousel">
+  <div className="carousel-inner">
+
+    {Array.from({ length: Math.ceil(featured.length / 3) }).map((_, slideIndex) => {
+      const big = featured[slideIndex * 3];
+      const small1 = featured[slideIndex * 3 + 1];
+      const small2 = featured[slideIndex * 3 + 2];
+
+      return (
+        <div key={"d" + slideIndex} className={`carousel-item ${slideIndex === 0 ? "active" : ""}`}>
+          <div className="d-flex gap-3">
+
+            {/* Grande sinistra */}
+            <div style={{ width: "66%" }}>
+              {big && (
+                <Link to={`/recipe/${big.id}`}>
+                  <img
+                    src={big.image}
+                    className="img-fluid rounded"
+                    style={{ height: "380px", width: "100%", objectFit: "cover" }}
+                  />
+                </Link>
+              )}
+            </div>
+
+            {/* Due piccole destra */}
+            <div style={{ width: "34%" }} className="d-flex flex-column justify-content-between">
+              {small1 && (
+                <Link to={`/recipe/${small1.id}`}>
+                  <img
+                    src={small1.image}
+                    className="img-fluid rounded mb-3"
+                    style={{ height: "185px", width: "100%", objectFit: "cover" }}
+                  />
+                </Link>
+              )}
+
+              {small2 && (
+                <Link to={`/recipe/${small2.id}`}>
+                  <img
+                    src={small2.image}
+                    className="img-fluid rounded"
+                    style={{ height: "185px", width: "100%", objectFit: "cover" }}
+                  />
+                </Link>
+              )}
+            </div>
+
+          </div>
+        </div>
+      );
+    })}
+
+  </div>
+
+  <button className="carousel-control-prev" type="button" data-bs-target="#featuredCarouselDesktop" data-bs-slide="prev">
+    <span className="carousel-control-prev-icon" />
+  </button>
+  <button className="carousel-control-next" type="button" data-bs-target="#featuredCarouselDesktop" data-bs-slide="next">
+    <span className="carousel-control-next-icon" />
+  </button>
+</div>
+
+
 
       {/* Titolo ingredienti */}
-      <h2 className="text-center pt-4 mb-4">Scegli gli ingredienti 🍽️</h2>
-      <h6 className="text-center text-muted mb-3">
+      <h2 className="text-outline text-center pt-0 mb-4">Scegli gli ingredienti 🍽️</h2>
+      <h6 className="text-outline text-center text-muted mb-3">
         Clicca sugli ingredienti o scrivili nella barra di ricerca in alto
       </h6>
 
