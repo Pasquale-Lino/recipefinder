@@ -108,7 +108,10 @@ function ProfilePage() {
     <div
       className="customProfile"
       style={{
-  backgroundImage: `url(${bgImage})`,
+  backgroundImage: `
+    linear-gradient(rgba(0, 0, 0, 0.25), rgba(0, 0, 0, 0.25)),
+    url(${bgImage})
+  `,
   backgroundSize: "cover",
   backgroundPosition: "center",
   backgroundAttachment: "fixed",

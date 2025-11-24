@@ -5,61 +5,70 @@ import { useAuth } from "../hooks/useAuth";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import woodBg from "../assets/img/fondo-della-pavimentazione-di-struttura-di-legno-marrone.jpg";
 
+
 function Navbar() {
   const { searchTerm, setSearchTerm } = useSearch();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (!searchTerm.trim()) return;
+  e.preventDefault();
 
-    if (window.location.pathname !== "/home") {
-      navigate("/home");
+  if (!searchTerm.trim()) return;
 
-      setTimeout(() => {
-        const resultsSection = document.getElementById("results-section");
-        if (resultsSection) {
-          resultsSection.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 300);
+  // Se NON sei in home → torna in home
+  if (window.location.pathname !== "/home") {
+    navigate("/home");
 
-      return;
-    }
+    // aspetta un attimo che la pagina carichi il blocco risultati
+    setTimeout(() => {
+      const resultsSection = document.getElementById("results-section");
+      if (resultsSection) {
+        resultsSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 300);
 
-    const resultsSection = document.getElementById("results-section");
-    if (resultsSection) {
-      resultsSection.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+    return;
+  }
+
+  // Se sei già in home → scrolla normalmente
+  const resultsSection = document.getElementById("results-section");
+  if (resultsSection) {
+    resultsSection.scrollIntoView({ behavior: "smooth" });
+  }
+};
+
+
 
   return (
     <>
-      {/* NAVBAR */}
       <nav
-        className="navbar fixed-top shadow-sm"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)),
-            url(${woodBg})
-          `,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat",
-          borderBottom: "2px solid rgba(0,0,0,0.3)",
-          color: "white",
-        }}
-      >
+  className="navbar fixed-top shadow-sm"
+  style={{
+    backgroundImage: `url(${woodBg})`,
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+    backgroundRepeat: "no-repeat",
+    borderBottom: "2px solid rgba(0,0,0,0.3)"
+  }}
+>
+
         <div className="container-fluid px-1 d-flex align-items-center">
           <span
-            className="navbar-brand fw-bold me-2 text-light"
+            className="navbar-brand fw-bold me-2 text-outline text-light"
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
             🍳 Recipe Finder
           </span>
+          {/* <button
+            className="btn btn-outline-light m-1"
+            onClick={() => navigate("/home")}
+          >
+            🏠 Home
+          </button> */}
 
-          <form className="d-flex flex-grow-1 me-2" onSubmit={handleSearch}>
+          <form className="form d-flex flex-grow-1 me-2" onSubmit={handleSearch}>
             <input
               className="form-control me-2"
               type="search"
@@ -67,8 +76,8 @@ function Navbar() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button className="btn btn-outline-light fw-bold" type="submit">
-              Cerca
+            <button className="btn btn-outline-light text-outline fw-bold" type="submit">
+             Cerca
             </button>
           </form>
 
@@ -84,34 +93,26 @@ function Navbar() {
         </div>
       </nav>
 
-      {/* SIDEBAR */}
       <div
-        className="offcanvas offcanvas-end text-light"
-        id="sidebarMenu"
+        className="offcanvas offcanvas-end bg-dark text-light"
         tabIndex="-1"
+        id="sidebarMenu"
         aria-labelledby="sidebarLabel"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
-            url(${woodBg})
-          `,
-          backgroundSize: "cover",
-          backgroundRepeat: "no-repeat",
-          backgroundPosition: "center",
-          transform: "rotate(90deg)",
-          transformOrigin: "center",
-        }}
       >
-        <div className="offcanvas-header border-bottom border-secondary" style={{ transform: "rotate(-90deg)" }}>
-          <h5 className="offcanvas-title text-warning">🍽️ Menu</h5>
+        <div className="offcanvas-header border-bottom border-secondary">
+          <h5 className="offcanvas-title text-light" id="sidebarLabel">
+            🍽️ Menu
+          </h5>
           <button
             type="button"
             className="btn-close btn-close-white"
             data-bs-dismiss="offcanvas"
+            aria-label="Close"
           ></button>
         </div>
 
-        <div className="offcanvas-body" style={{ transform: "rotate(-90deg)" }}>
+        <div className="offcanvas-body">
+          {/* 👤 Info utente */}
           {user ? (
             <>
               <p className="mb-3">
@@ -147,23 +148,36 @@ function Navbar() {
             </>
           )}
 
+          {/* 📋 Menu link */}
           <ul className="list-unstyled">
             <li className="mb-3">
               <button
-                className="btn btn-link text-light p-0"
-                onClick={() => navigate("/home")}
+                className="btn btn-link text-light text-decoration-none p-0"
                 data-bs-dismiss="offcanvas"
+                onClick={() => navigate("/home")}
               >
                 🏠 Home
               </button>
             </li>
+            {/* 
+            <li className="mb-3">
+              <button
+                className="btn btn-link text-light text-decoration-none p-0"
+                data-bs-dismiss="offcanvas"
+                onClick={() => navigate("/home")}
+              >
+                          
 
+                🔍 Cerca ricette
+              </button>
+            </li>
+*/}
             {user && (
               <>
                 <li className="mb-3">
                   <button
-                    className="btn btn-link text-light p-0"
                     onClick={() => navigate("/profile")}
+                    className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     📚 Le mie ricette
@@ -171,13 +185,24 @@ function Navbar() {
                 </li>
                 <li className="mb-3">
                   <button
-                    className="btn btn-link text-light p-0"
                     onClick={() => navigate("/create-recipe")}
+                    className="btn btn-link text-light text-decoration-none p-0"
                     data-bs-dismiss="offcanvas"
                   >
                     📖 Aggiungi una ricetta
                   </button>
                 </li>
+                  {/* 
+                <li className="mb-3">
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="btn btn-link text-light text-decoration-none p-0"
+                    data-bs-dismiss="offcanvas"
+                  >
+                    ❤️ Preferiti
+                  </button>
+                </li>
+                */}
               </>
             )}
           </ul>
