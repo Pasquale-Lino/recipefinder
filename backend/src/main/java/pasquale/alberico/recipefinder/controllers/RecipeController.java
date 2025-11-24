@@ -54,9 +54,12 @@ public class RecipeController {
     // Ricette dell’utente loggato
     @GetMapping("/me")
     public List<Recipe> getMyRecipes(Authentication authentication) {
+        System.out.println("🔴 BACKEND AUTHENTICATION: " + authentication);
         User currentUser = (User) authentication.getPrincipal();
+        System.out.println("🟢 BACKEND UTENTE LOGGATO ID=" + currentUser.getId() + " ruolo=" + currentUser.getRole());
         return recipeService.getRecipesByUser(currentUser);
     }
+
 
     // Featured per carosello
     @GetMapping("/featured")

@@ -1,42 +1,56 @@
 import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { apiFetch } from "../api/api"; // ⬅ usa apiFetch per il token JWT
+import { apiFetch } from "../api/api";
 
 function ProfilePage() {
-  const { user, logout } = useAuth(); // 🔐 user contiene { id, email, token }
+  const { user, logout } = useAuth();
   const [myRecipes, setMyRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
 
-  // 🟦 Al mount carichiamo ricette e preferiti
+  // =============================
+  //   CARICA DATI PROFILO
+  // =============================
   useEffect(() => {
-    // Se l'utente non è loggato → non fare nulla
     if (!user) return;
 
     const loadData = async () => {
-      // 🔹 RICETTE SALVATE IN LOCALE
-      const savedRecipes = JSON.parse(localStorage.getItem("myRecipes") || "[]");
-      setMyRecipes(savedRecipes);
-
-      // 🔹 VERIFICA CHE user.id ESISTA
-      if (!user.id) {
-        console.error("❌ ERRORE: user.id è undefined! User ricevuto:", user);
-        return;
-      }
-
       try {
-        // 🔥 CHIAMATA PROTETTA AL BACKEND CON JWT
-        const data = await apiFetch(`/favorites/${user.id}`);
-        setFavorites(data);
+        // ricette create dall'utente loggato
+        const recipes = await apiFetch("/recipes/me");
+        setMyRecipes(recipes);
+
+        // preferiti
+        if (user.id) {
+          const fav = await apiFetch(`/favorites/${user.id}`);
+          setFavorites(fav);
+        }
       } catch (error) {
-        console.error("❌ Errore nel caricamento dei preferiti:", error);
+        console.error("Errore caricamento profilo:", error);
       }
     };
 
     loadData();
   }, [user]);
 
-  // 🔐 Se non sei loggato → mostra invito al login
+  // =============================
+  //   ELIMINA RICETTA
+  // =============================
+  const deleteRecipe = async (id) => {
+    if (!window.confirm("Vuoi davvero eliminare questa ricetta?")) return;
+
+    try {
+      await apiFetch(`/recipes/admin/${id}`, { method: "DELETE" });
+      setMyRecipes((prev) => prev.filter((r) => r.id !== id));
+    } catch (err) {
+      console.error("Errore eliminazione ricetta:", err);
+      alert("Errore nell'eliminazione.");
+    }
+  };
+
+  // =============================
+  //   SE NON LOGGATO
+  // =============================
   if (!user) {
     return (
       <div className="text-center py-5">
@@ -55,7 +69,7 @@ function ProfilePage() {
   return (
     <div className="customProfile">
       <div className="container py-5">
-        {/* 👤 Header profilo */}
+        {/* HEADER PROFILO */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h2>👋 Benvenuto, {user.username || user.email}</h2>
           <button className="btn btn-outline-success" onClick={logout}>
@@ -63,52 +77,97 @@ function ProfilePage() {
           </button>
         </div>
 
-        <div className="row">
-          {/* 📒 --- LE MIE RICETTE --- */}
-          <div className="col-md-6 mb-4">
-            <h4>📒 Le mie ricette</h4>
+        {/* ======================= */}
+        {/*    LE MIE RICETTE      */}
+        {/* ======================= */}
+        <div className="mb-5">
+          <h4>📒 Le mie ricette</h4>
 
+          <div className="row g-4 mt-3">
             {myRecipes.length === 0 ? (
               <p className="text-muted">Nessuna ricetta creata finora.</p>
             ) : (
-              <ul className="list-group mb-3">
-                {myRecipes.map((r, i) => (
-                  <li key={i} className="list-group-item">
-                    {r.title}
-                  </li>
-                ))}
-              </ul>
-            )}
+              myRecipes.map((r) => (
+                <div
+                  className="col-12 col-md-6 col-lg-4 mb-3 d-flex"
+                  key={r.id}
+                >
+                  <div className="card shadow-sm w-100 h-100">
+                    <img
+                      src={
+                        r.image ||
+                        "https://via.placeholder.com/600x400?text=Nessuna+immagine"
+                      }
+                      className="card-img-top"
+                      alt={r.title}
+                      style={{ height: "220px", objectFit: "cover" }}
+                    />
 
-            <Link to="/create-recipe" className="btn btn-success mt-2">
-              ➕ Crea una nuova ricetta
-            </Link>
+                    <div className="card-body d-flex flex-column">
+                      <h5 className="card-title">{r.title}</h5>
+
+                      <div className="mt-3 d-flex justify-content-between">
+                        <Link
+                          to={`/recipe/${r.id}`}
+                          className="btn btn-primary btn-sm"
+                        >
+                          👁️ Vedi
+                        </Link>
+
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => deleteRecipe(r.id)}
+                        >
+                          🗑️ Elimina
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
-          {/* ❤️ --- RICETTE PREFERITE --- */}
-          <div className="col-md-6 mb-4">
-            <h4>❤️ Ricette preferite</h4>
-
-            {favorites.length === 0 ? (
-              <p className="text-muted">Non hai ancora salvato nessuna ricetta.</p>
-            ) : (
-              <ul className="list-group">
-                {favorites.map((r) => (
-                  <li key={r.id} className="list-group-item d-flex justify-content-between align-items-center">
-                    {r.title}
-                    <Link to={`/recipe/${r.id}`} className="btn btn-sm btn-outline-primary">
-                      Vedi
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <Link to="/create-recipe" className="btn btn-success mt-3">
+            ➕ Crea una nuova ricetta
+          </Link>
         </div>
 
-        {/* 👑 ADMIN PANEL (se utente è admin) */}
+        {/* ======================= */}
+        {/*     PREFERITI           */}
+        {/* ======================= */}
+        <div className="mb-5">
+          <h4>❤️ Ricette preferite</h4>
+
+          {favorites.length === 0 ? (
+            <p className="text-muted">
+              Non hai ancora salvato nessuna ricetta.
+            </p>
+          ) : (
+            <ul className="list-group">
+              {favorites.map((r) => (
+                <li
+                  key={r.id}
+                  className="list-group-item d-flex justify-content-between align-items-center"
+                >
+                  {r.title}
+                  <Link
+                    to={`/recipe/${r.id}`}
+                    className="btn btn-outline-primary btn-sm"
+                  >
+                    Vedi
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        {/* ======================= */}
+        {/*     ADMIN PANEL         */}
+        {/* ======================= */}
         {user.role === "ADMIN" && (
-          <div className="border-top pt-4 mt-4">
+          <div className="border-top pt-4">
             <h4>👑 Pannello Admin</h4>
             <p className="text-muted">Funzionalità di moderazione in arrivo.</p>
           </div>

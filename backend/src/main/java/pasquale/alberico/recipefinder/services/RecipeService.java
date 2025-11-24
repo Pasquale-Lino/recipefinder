@@ -174,6 +174,10 @@ public class RecipeService {
     }
 
     public List<Recipe> getRecipesByUser(User user) {
-        return recipeRepository.findByUser(user);
+        System.out.println("🔍 Cerco ricette per userId=" + user.getId());
+        List<Recipe> list = recipeRepository.findByUser(user);
+        System.out.println("📦 Ricette trovate: " + list.size());
+        return list;
     }
+
 }
