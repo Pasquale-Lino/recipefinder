@@ -29,7 +29,9 @@ public class AuthController {
         this.jwtTools = jwtTools;
     }
 
+    // -----------------------------
     // REGISTRAZIONE
+    // -----------------------------
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User newUser) {
         if (userRepository.findByEmail(newUser.getEmail()) != null) {
@@ -48,12 +50,15 @@ public class AuthController {
         emailService.sendWelcomeEmail(newUser.getEmail(), newUser.getUsername());
         emailService.sendVerificationCode(newUser.getEmail(), newUser.getVerificationCode());
 
-        return ResponseEntity.ok("✅ Registrazione completata! Ti abbiamo inviato un codice di verifica via email.");
+        return ResponseEntity.ok("Registrazione completata. Controlla la mail per il codice di verifica!");
     }
 
-    // VERIFICA CODICE OTP
+    // -----------------------------
+    // VERIFICA OTP
+    // -----------------------------
     @PostMapping("/verify-code")
     public ResponseEntity<Map<String, Object>> verifyCode(@RequestBody Map<String, String> payload) {
+
         String email = payload.get("email");
         String code = payload.get("code");
 
@@ -85,7 +90,6 @@ public class AuthController {
         userRepository.save(user);
 
         String token = jwtTools.generateToken(user);
-
         user.setPassword(null);
 
         resp.put("message", "Account verificato con successo!");
@@ -95,9 +99,12 @@ public class AuthController {
         return ResponseEntity.ok(resp);
     }
 
+    // -----------------------------
     // LOGIN
+    // -----------------------------
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody User loginRequest) {
+
         Map<String, Object> resp = new HashMap<>();
 
         User user = userRepository.findByEmail(loginRequest.getEmail());
@@ -117,7 +124,6 @@ public class AuthController {
         }
 
         String token = jwtTools.generateToken(user);
-
         user.setPassword(null);
 
         resp.put("user", user);
@@ -126,7 +132,9 @@ public class AuthController {
         return ResponseEntity.ok(resp);
     }
 
-
+    // -----------------------------
+    // CANCELLA UTENTE (debug)
+    // -----------------------------
     @DeleteMapping("/delete/{email}")
     public ResponseEntity<String> deleteUser(@PathVariable String email) {
         User u = userRepository.findByEmail(email);

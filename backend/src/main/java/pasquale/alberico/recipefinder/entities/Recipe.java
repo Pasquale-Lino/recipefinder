@@ -1,5 +1,7 @@
+// src/main/java/pasquale/alberico/recipefinder/entities/Recipe.java
 package pasquale.alberico.recipefinder.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +13,7 @@ import lombok.Setter;
 public class Recipe {
 
     @Id
-    private Long id; // Spoonacular ID o ID custom (es. System.currentTimeMillis)
+    private Long id;
 
     @Column(columnDefinition = "TEXT")
     private String title;
@@ -32,16 +34,14 @@ public class Recipe {
 
     private Integer servings;
 
-    // visibilità ricetta
     @Column(name = "is_public", nullable = false)
     private boolean publicRecipe = false;
 
-    // per carosello homepage
     @Column(nullable = false)
     private boolean featured = false;
 
-    // ricetta può appartenere a un user (o essere null = Spoonacular)
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 }

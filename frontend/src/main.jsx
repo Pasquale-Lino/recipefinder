@@ -10,7 +10,7 @@ import CreateRecipePage from "./pages/CreateRecipePage.jsx";
 import PrivateRoute from "./components/PrivateRoute.jsx";
 import LoginModal from "./components/LoginModal.jsx";
 import RegisterPage from "./pages/RegisterPage.jsx"; 
-import { AuthProvider } from "./context/AuthProvider.jsx";
+import AuthProvider from "./context/AuthProvider.jsx";
 import { SearchProvider } from "./context/SearchContext.jsx";
 import "./index.css";
 import VerifyPage from "./pages/VerifyPage.jsx"; 
