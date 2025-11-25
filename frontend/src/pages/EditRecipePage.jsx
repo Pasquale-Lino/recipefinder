@@ -4,6 +4,10 @@ import { apiFetch } from "../api/api";
 import { useAuth } from "../hooks/useAuth";
 
 function EditRecipePage() {
+    useEffect(() => {
+  document.title = "Modifica ricetta - Recipe Finder";
+}, []);
+
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();

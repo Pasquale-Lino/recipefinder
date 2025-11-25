@@ -5,6 +5,10 @@ import { apiFetch } from "../api/api";
 import bgImage from "../assets/img/disposizione-degli-alimenti-conservati-sugli-scaffali.jpg";
 
 function ProfilePage() {
+  useEffect(() => {
+  document.title = "Le mie ricette - Recipe Finder";
+}, []);
+
   const { user, logout } = useAuth();
   const [myRecipes, setMyRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);

@@ -6,7 +6,17 @@ import { translateText } from "../utils/translate";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../App.css";
 
+
 function HomePage() {
+// ==========================
+//   IMPOSTA TITOLO PAGINA
+// ==========================
+  useEffect(() => {
+    document.title = "Home - Recipe Finder";
+  }, []);
+// ==========================
+//   GESTIONE RICETTE & INGREDIENTI
+// ==========================
   const { searchTerm, setSearchTerm } = useSearch();
 
   const [selectedIngredients, setSelectedIngredients] = useState([]);

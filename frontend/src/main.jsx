@@ -15,6 +15,10 @@ import { SearchProvider } from "./context/SearchContext.jsx";
 import "./index.css";
 import VerifyPage from "./pages/VerifyPage.jsx"; 
 import EditRecipePage from "./pages/EditRecipePage.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import TermsAndConditions from "./pages/TermsAndConditions.jsx";
+import AboutProject from "./pages/AboutProject.jsx";
+
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
@@ -40,7 +44,10 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               {/* 📝 Registrazione aperta a tutti */}
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/verify" element={<VerifyPage />} />
-
+                {/* Pagine informative */}
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/termini" element={<TermsAndConditions />} />
+              <Route path="/progetto" element={<AboutProject />} />
             </Route>
           </Routes>
         </BrowserRouter>

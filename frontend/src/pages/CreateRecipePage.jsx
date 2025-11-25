@@ -1,9 +1,13 @@
 // src/pages/CreateRecipePage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 function CreateRecipePage() {
+  useEffect(() => {
+  document.title = "Crea ricetta - Recipe Finder";
+}, []);
+
   const navigate = useNavigate();
   const { token } = useAuth();
 

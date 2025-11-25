@@ -204,68 +204,124 @@ flex-wrap: nowrap;}
     0px  1px 2px black,
      0px  1px 2px black
 }
-/* ===========================
-   FOOTER STYLING
-   =========================== */
-
+/* ============================
+   STILE FOOTER GLOBALE
+   ============================ */
 .global-footer {
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6px);
-  border-radius: 20px 20px 0 0;
-  color: #fff;
-}
-
-.footer-title {
-  font-size: 1.7rem;
-  font-weight: 800;
-}
-
-.footer-subtitle {
-  font-size: 1rem;
-  opacity: 0.85;
+  background: rgba(0, 0, 0, 0.75);
+  border-top: 1px solid #ffffff30;
+  color: white;
 }
 
 .footer-link {
-  color: #ffd89c;
-  font-weight: 600;
+  color: #ffffff;
+  font-weight: 500;
   text-decoration: none;
 }
+
 .footer-link:hover {
-  color: #ffae42;
+    opacity: 1;
+  transform: scale(1.15);
+  color: #ffc107; 
 }
 
-/* =======================
-   SOCIAL ICONS
-   ======================= */
-.social-icon {
-  font-size: 1.7rem;
-  color: white;
-  transition: 0.2s ease;
+.footer-title {
+  font-size: 1.5rem;
+  font-weight: bold;
 }
 
-.social-icon:hover {
-  transform: scale(1.25);
+.footer-copy {
+  font-size: 0.9rem;
   opacity: 0.8;
 }
 
-.instagram:hover { color: #e1306c; }
-.facebook:hover { color: #1877f2; }
-.youtube:hover { color: #ff0000; }
-.tiktok:hover { color: #000000; }
-
-/* =======================
-   Back To Top button
-   ======================= */
-.back-to-top-btn {
-  background: #ffaa3b;
+/* Torna su */
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 30px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #ffc107;
+  color: black;
   border: none;
-  font-weight: 600;
-  padding: 8px 18px;
-  border-radius: 50px;
+  font-size: 1.4rem;
   cursor: pointer;
-  transition: 0.2s;
+  transition: 0.3s;
 }
-.back-to-top-btn:hover {
-  background: #ff8c00;
-  transform: translateY(-2px);
+
+.back-to-top:hover {
+  background: #ffda4d;
 }
+
+/* ============================================
+   STILE MIGLIORATO PER LE PAGINE LEGALI
+   ============================================ */
+
+.legal-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  
+  /* Background scuro sfumato */
+  background: linear-gradient(
+    145deg,
+    rgba(0, 0, 0, 0.85),
+    rgba(25, 25, 25, 0.85)
+  );
+
+  /* Effetto vetro leggero */
+  backdrop-filter: blur(6px);
+
+  /* Bordo leggero */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+
+  /* Ombra elegante */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45);
+
+  border-radius: 18px;
+  color: #e6e6e6;
+}
+
+/* Titoli importanti più leggibili */
+.legal-page h1,
+.legal-page h3 {
+  color: #fff !important;
+  text-shadow: 0 0 6px rgba(0, 0, 0, 0.9);
+  font-weight: 700;
+}
+
+/* Liste con maggiore spazio tra elementi */
+.legal-page ul {
+  padding-left: 1.3rem;
+}
+
+.legal-page li {
+  margin-bottom: 0.4rem;
+}
+
+/* Paragrafi più leggibili */
+.legal-page p {
+  font-size: 1.05rem;
+  line-height: 1.65;
+}
+
+/* Spazio generale più elegante */
+.legal-page * + * {
+  margin-top: 0.7rem;
+}
+/* SOCIAL ICONS */
+.social-icon {
+  font-size: 1.6rem;
+  color: #ffffff;
+  opacity: 0.8;
+  transition: 0.2s ease-in-out;
+}
+
+.social-icon:hover {
+  opacity: 1;
+  transform: scale(1.15);
+  color: #ffc107; /* giallo elegante */
+}
+
