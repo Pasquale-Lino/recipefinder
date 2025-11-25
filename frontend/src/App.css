@@ -204,3 +204,68 @@ flex-wrap: nowrap;}
     0px  1px 2px black,
      0px  1px 2px black
 }
+/* ===========================
+   FOOTER STYLING
+   =========================== */
+
+.global-footer {
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  border-radius: 20px 20px 0 0;
+  color: #fff;
+}
+
+.footer-title {
+  font-size: 1.7rem;
+  font-weight: 800;
+}
+
+.footer-subtitle {
+  font-size: 1rem;
+  opacity: 0.85;
+}
+
+.footer-link {
+  color: #ffd89c;
+  font-weight: 600;
+  text-decoration: none;
+}
+.footer-link:hover {
+  color: #ffae42;
+}
+
+/* =======================
+   SOCIAL ICONS
+   ======================= */
+.social-icon {
+  font-size: 1.7rem;
+  color: white;
+  transition: 0.2s ease;
+}
+
+.social-icon:hover {
+  transform: scale(1.25);
+  opacity: 0.8;
+}
+
+.instagram:hover { color: #e1306c; }
+.facebook:hover { color: #1877f2; }
+.youtube:hover { color: #ff0000; }
+.tiktok:hover { color: #000000; }
+
+/* =======================
+   Back To Top button
+   ======================= */
+.back-to-top-btn {
+  background: #ffaa3b;
+  border: none;
+  font-weight: 600;
+  padding: 8px 18px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.back-to-top-btn:hover {
+  background: #ff8c00;
+  transform: translateY(-2px);
+}
