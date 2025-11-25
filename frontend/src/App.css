@@ -324,4 +324,50 @@ flex-wrap: nowrap;}
   transform: scale(1.15);
   color: #ffc107; /* giallo elegante */
 }
+/* ===============================
+LINK INTERATTIVI SIDEBAR
+================================*/
+.btn-logout {
+  margin-left: auto;
+}
+.btn-logout:active {
+  transform: scale(0.98);
+}
+.btn-logout:hover {
+  cursor: pointer;
+}
+.sidebar-link {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
 
+  color: #ffffffcc;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
+  text-align: left;
+  font-size: 1.05rem;
+  font-weight: 500;
+
+  transition: all 0.25s ease;
+}
+
+.sidebar-link:hover {
+  color: white !important;
+  text-shadow: 0 0 5px rgba(0, 0, 0, 1);
+
+  background: #ffc107;
+  border-color: rgba(255, 255, 255, 0.25);
+
+  transform: translateX(4px);
+  cursor: pointer;
+}
+
+.sidebar-link:active {
+  transform: scale(0.98);
+}
+.text-preferiti {
+  color: #000000 !important;
+  font-weight: 600;
+}

@@ -216,8 +216,8 @@ function ProfilePage() {
         {/* ======================= */}
         {/*     PREFERITI           */}
         {/* ======================= */}
-        <div className="mb-5 text-outline">
-          <h4>❤️ Ricette preferite</h4>
+        <div className="mb-5">
+          <h4 className="text-outline">❤️ Ricette preferite</h4>
 
           {favorites.length === 0 ? (
             <p className="text-muted text-outline">
@@ -228,14 +228,14 @@ function ProfilePage() {
               {favorites.map((r) => (
                 <li
                   key={r.id}
-                  className="list-group-item d-flex justify-content-between align-items-center text-outline"
+                  className="list-group-item d-flex justify-content-between align-items-center  text-preferiti"
                 >
                   {r.title}
                   <Link
                     to={`/recipe/${r.id}`}
-                    className="btn btn-outline-primary btn-sm text-outline"
+                    className="btn btn-primary btn-sm"
                   >
-                    Vedi
+                   👁️ Vedi
                   </Link>
                 </li>
               ))}

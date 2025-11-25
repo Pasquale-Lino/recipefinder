@@ -103,13 +103,33 @@ function Navbar() {
           <h5 className="offcanvas-title text-light" id="sidebarLabel">
             🍽️ Menu
           </h5>
-          <button
-            type="button"
-            className="btn-close btn-close-white"
-            data-bs-dismiss="offcanvas"
-            aria-label="Close"
-          ></button>
-        </div>
+        
+          
+            <div className="d-flex align-items-center gap-2 btn-logout">
+      {/* 🔥 LOGOUT IN ALTO A DESTRA */}
+      {user && (
+        <button
+          className="btn  btn-sm btn-outline-danger"
+          onClick={() => {
+            logout();
+            navigate("/home");
+          }}
+          data-bs-dismiss="offcanvas"
+        >
+          🚪 Logout
+        </button>
+      )}
+
+      {/* ❌ BOTTONE CHIUDI */}
+      <button
+        type="button"
+        className="btn-close btn-close-white"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+  </div>
+       
 
         <div className="offcanvas-body">
           {/* 👤 Info utente */}
@@ -118,16 +138,7 @@ function Navbar() {
               <p className="mb-3">
                 👋 Ciao, <strong>{user.username || user.email}</strong>
               </p>
-              <button
-                className="btn btn-outline-danger mb-4 w-100"
-                onClick={() => {
-                  logout();
-                  navigate("/home");
-                }}
-                data-bs-dismiss="offcanvas"
-              >
-                🚪 Logout
-              </button>
+              
             </>
           ) : (
             <>
@@ -152,32 +163,20 @@ function Navbar() {
           <ul className="list-unstyled">
             <li className="mb-3">
               <button
-                className="btn btn-link text-light text-decoration-none p-0"
+                className="sidebar-link"
                 data-bs-dismiss="offcanvas"
                 onClick={() => navigate("/home")}
               >
                 🏠 Home
               </button>
             </li>
-            {/* 
-            <li className="mb-3">
-              <button
-                className="btn btn-link text-light text-decoration-none p-0"
-                data-bs-dismiss="offcanvas"
-                onClick={() => navigate("/home")}
-              >
-                          
-
-                🔍 Cerca ricette
-              </button>
-            </li>
-*/}
+            
             {user && (
               <>
                 <li className="mb-3">
                   <button
                     onClick={() => navigate("/profile")}
-                    className="btn btn-link text-light text-decoration-none p-0"
+                    className="sidebar-link"
                     data-bs-dismiss="offcanvas"
                   >
                     📚 Le mie ricette
@@ -186,7 +185,7 @@ function Navbar() {
                 <li className="mb-3">
                   <button
                     onClick={() => navigate("/create-recipe")}
-                    className="btn btn-link text-light text-decoration-none p-0"
+                    className="sidebar-link"
                     data-bs-dismiss="offcanvas"
                   >
                     📖 Aggiungi una ricetta
