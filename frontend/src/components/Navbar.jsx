@@ -55,7 +55,7 @@ function Navbar() {
 
         <div className="container-fluid px-1 d-flex align-items-center">
           <span
-            className="navbar-brand fw-bold me-2 text-outline text-light"
+            className="navbar-brand fw-bold me-4 text-outline text-light"
             style={{ cursor: "pointer" }}
             onClick={() => navigate("/home")}
           >
