@@ -20,7 +20,8 @@ function Footer() {
             <div className="col-12 col-md-4 mb-4  order-md-1">
 
               <img
-             src={`${import.meta.env.BASE_URL}icon recipefinder 3.png`}
+             src="https://res.cloudinary.com/dkitqea8c/image/upload/v1764264204/icon_recipefinder_3_sk8ptj.png"
+
              alt="RecipeFinder Logo"
              style={{width: "55px",height: "55px",objectFit: "contain"
             }}

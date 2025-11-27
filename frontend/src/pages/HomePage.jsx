@@ -246,12 +246,41 @@ const ingredientCategories = {
   <div className="carousel-inner">
 
     {Array.from({ length: Math.ceil(featured.length / 3) }).map((_, slideIndex) => {
+      {/*Qui fai la magia della paginazione a gruppi di 3:
+      featured è l’array delle ricette in evidenza.
+      featured.length / 3 → quante "pagine" da 3 ricette ci sarebbero.
+      Math.ceil(...) → arrotonda per eccesso, così se hai 4 o 5 ricette ottieni:
+      4 → 2 slide (3 + 1)
+      5 → 2 slide (3 + 2)
+      Array.from({ length: N }) → crea un array "fittizio" di lunghezza N che userai solo per iterare.
+      .map((_, slideIndex) => { ... }) → iteri su ogni “pagina” del carosello:
+      _ → il valore non usato (solo segnaposto).
+      slideIndex → 0, 1, 2… indice della slide. 
+        */}
       const big = featured[slideIndex * 3];
       const small1 = featured[slideIndex * 3 + 1];
       const small2 = featured[slideIndex * 3 + 2];
-
-      return (
-        <div key={"d" + slideIndex} className={`carousel-item ${slideIndex === 0 ? "active" : ""}`}>
+      {/*Per ogni slide prendi fino a 3 ricette:
+        big → la ricetta grande a sinistra:
+        indice: slideIndex * 3
+        se slideIndex = 0 → 0
+        se slideIndex = 1 → 3
+        se slideIndex = 2 → 6, ecc.
+        small1 → prima piccola a destra:
+        slideIndex * 3 + 1 → 1, 4, 7…
+        small2 → seconda piccola a destra:
+        slideIndex * 3 + 2 → 2, 5, 8…
+        Così ogni "pagina" del carosello mostra al massimo 3 elementi: 1 grande + 2 piccoli. 
+        */}
+        return (
+          <div key={"d" + slideIndex} className={`carousel-item ${slideIndex === 0 ? "active" : ""}`}>
+          {/*return ( → per ogni gruppo di 3, renderizzi una slide.
+            key={"d" + slideIndex} → key univoca per React, tipo "d0", "d1", ecc.
+            className={carousel-item ${slideIndex === 0 ? "active" : ""}}:
+            sempre carousel-item per Bootstrap.
+            se slideIndex === 0 → aggiungi active → prima slide visibile di default.
+            le altre slide NON hanno la classe active, quindi sono nascoste all’inizio.
+            */}
           <div className="d-flex gap-3">
 
             {/* Grande sinistra */}
@@ -294,7 +323,15 @@ const ingredientCategories = {
         </div>
       );
     })}
-
+    {/* Riassunto “mentale” di cosa fa:
+    Prende featured (lista ricette in evidenza).
+    Le spacchetta a gruppi di 3 per ogni slide:
+    1 grande a sinistra (big)
+    2 piccole a destra (small1, small2)
+    Usa Array.from + Math.ceil per creare il numero giusto di slide.
+    Gestisce il caso in cui non hai multipli di 3 (gli && evitano errori).
+    Imposta la prima slide come attiva.
+    Usa Bootstrap per layout e carosello, React Router per i link.*/ }
   </div>
 
   <button className="carousel-control-prev" type="button" data-bs-target="#featuredCarouselDesktop" data-bs-slide="prev">

@@ -2,7 +2,7 @@ import { useAuth } from "../hooks/useAuth";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { apiFetch } from "../api/api";
-import bgImage from "../assets/img/disposizione-degli-alimenti-conservati-sugli-scaffali.jpg";
+
 
 function ProfilePage() {
   useEffect(() => {
@@ -12,7 +12,7 @@ function ProfilePage() {
   const { user, logout } = useAuth();
   const [myRecipes, setMyRecipes] = useState([]);
   const [favorites, setFavorites] = useState([]);
-
+  const bgImage = "https://res.cloudinary.com/dkitqea8c/image/upload/v1764264479/disposizione-degli-alimenti-conservati-sugli-scaffali_Grande_kplkle.jpg"
   // ========================================================
   //   CARICA DATI PROFILO
   // ========================================================
