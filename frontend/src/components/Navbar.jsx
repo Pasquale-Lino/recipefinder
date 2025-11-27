@@ -191,17 +191,7 @@ function Navbar() {
                     📖 Aggiungi una ricetta
                   </button>
                 </li>
-                  {/* 
-                <li className="mb-3">
-                  <button
-                    onClick={() => navigate("/profile")}
-                    className="btn btn-link text-light text-decoration-none p-0"
-                    data-bs-dismiss="offcanvas"
-                  >
-                    ❤️ Preferiti
-                  </button>
-                </li>
-                */}
+                  
               </>
             )}
           </ul>
