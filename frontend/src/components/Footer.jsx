@@ -20,15 +20,13 @@ function Footer() {
             <div className="col-12 col-md-4 mb-4  order-md-1">
 
               <img
-                src="/icon recipefinder 3.png"
-                alt="RecipeFinder Logo"
-                style={{
-                    width: "55px",
-                    height: "55px",
-                    objectFit: "contain"
-                }}
-                className="mb-2"
-              />
+             src={`${import.meta.env.BASE_URL}icon recipefinder 3.png`}
+             alt="RecipeFinder Logo"
+             style={{width: "55px",height: "55px",objectFit: "contain"
+            }}
+             className="mb-2"
+            />
+
                 <p className="footer-title mb-1 mt-2">RecipeFinder</p>
                 <p className="footer-subtitle">Le ricette che ami, sempre con te.</p>
             </div>
