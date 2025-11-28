@@ -81,15 +81,33 @@ function Navbar() {
             </button>
           </form>
 
-          <button
-            className="btn btn-outline-light"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#sidebarMenu"
-            aria-controls="sidebarMenu"
-          >
-            ☰
-          </button>
+          {/* FOTO PROFILO PICCOLA (solo se loggato) */}
+{user && (
+  <img
+    src={user.profileImage || "https://via.placeholder.com/40"}
+    alt="avatar"
+    className="rounded-circle me-2"
+    style={{
+      width: "40px",
+      height: "40px",
+      objectFit: "cover",
+      border: "2px solid white",
+      cursor: "pointer"
+    }}
+    onClick={() => navigate("/profile")}
+  />
+)}
+
+<button
+  className="btn btn-outline-light"
+  type="button"
+  data-bs-toggle="offcanvas"
+  data-bs-target="#sidebarMenu"
+  aria-controls="sidebarMenu"
+>
+  ☰
+</button>
+
         </div>
       </nav>
 
@@ -134,13 +152,28 @@ function Navbar() {
         <div className="offcanvas-body">
           {/* 👤 Info utente */}
           {user ? (
-            <>
-              <p className="mb-3">
-                👋 Ciao, <strong>{user.username || user.email}</strong>
-              </p>
-              
-            </>
-          ) : (
+  <>
+    {/* FOTO PROFILO GRANDE */}
+    <div className="text-center mb-3">
+      <img
+        src={user.profileImage || "https://via.placeholder.com/120"}
+        alt="avatar"
+        className="rounded-circle"
+        style={{
+          width: "80px",
+          height: "80px",
+          objectFit: "cover",
+          border: "3px solid #fff"
+        }}
+      />
+    </div>
+
+    <p className="text-center mb-3">
+      👋 Ciao, <strong>{user.firstName || user.username || user.email}</strong>
+    </p>
+  </>
+) : (
+
             <>
               <button
                 className="btn btn-warning mb-2 w-100"
