@@ -323,7 +323,8 @@ const ingredientCategories = {
         </div>
       );
     })}
-    {/* Riassunto “mentale” di cosa fa:
+
+  {/* Riassunto “mentale” di cosa fa:
     Prende featured (lista ricette in evidenza).
     Le spacchetta a gruppi di 3 per ogni slide:
     1 grande a sinistra (big)
