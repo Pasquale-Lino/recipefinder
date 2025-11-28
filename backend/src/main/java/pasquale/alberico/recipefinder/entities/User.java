@@ -40,6 +40,13 @@ public class User {
     @Column(name = "verification_code")
     private String verificationCode;
 
+    private String firstName;
+    private String lastName;
+    private String phoneNumber;
+    private String profileImage;
+
+
+
     // ❤️ preferiti – NON li serializziamo per evitare ricorsioni infinite
     @ManyToMany
     @JoinTable(

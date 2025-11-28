@@ -41,6 +41,8 @@ public class SecurityConfig {
 
                         // tutte le GET su ricette sono pubbliche
                         .requestMatchers(HttpMethod.GET, "/api/recipes/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/users/update-profile").authenticated()
+
 
                         // creazione / modifica / cancellazione ricette → solo ADMIN
                         .requestMatchers(HttpMethod.POST, "/api/recipes/**").hasRole("ADMIN")
@@ -60,7 +62,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
+        configuration.addAllowedOriginPattern("*"); // ⬅ accetta tutto
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
@@ -69,4 +71,6 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }
+

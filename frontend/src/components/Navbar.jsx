@@ -173,13 +173,14 @@ function Navbar() {
             
             {user && (
               <>
+              
                 <li className="mb-3">
                   <button
                     onClick={() => navigate("/profile")}
                     className="sidebar-link"
                     data-bs-dismiss="offcanvas"
                   >
-                    📚 Le mie ricette
+                    👤 Profilo
                   </button>
                 </li>
                 <li className="mb-3">

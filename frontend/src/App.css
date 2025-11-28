@@ -371,3 +371,19 @@ LINK INTERATTIVI SIDEBAR
   color: #000000 !important;
   font-weight: 600;
 }
+.mod-prof {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+}
+
+/* Su mobile (max 576px) i bottoni vanno sotto */
+@media (max-width: 576px) {
+  .mod-prof {
+    width: 100%;
+    margin-top: 15px;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+}
