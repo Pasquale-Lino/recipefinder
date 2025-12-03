@@ -346,7 +346,7 @@ const ingredientCategories = {
 
 
       {/* Titolo ingredienti */}
-      <h2 className="text-outline text-center pt-0 mb-4">Scegli gli ingredienti 🍽️</h2>
+      <h2 className="text-outline text-center pt-0 mb-4">Benvenuto, cosa vuoi cucinare? 🍽️</h2>
       <h6 className="text-outline text-center text-muted mb-3">
         Clicca sugli ingredienti o scrivili nella barra di ricerca in alto
       </h6>
